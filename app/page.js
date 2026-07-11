@@ -35,13 +35,14 @@ export default function Home() {
 
    // Find this array in your page.js and replace it with this:
   const categories = [
-    { name: '🏛️ Govt Jobs', slug: 'Government Jobs' },
-    { name: '🏦 Banking',   slug: 'Banking Jobs' },
-    { name: '🚂 Railway',   slug: 'Railway Jobs' },
-    { name: '💻 IT Jobs',   slug: 'IT & Software' },
-    { name: '🛡️ Defence',  slug: 'Defence Jobs' },
-    { name: '📚 Teaching',  slug: 'Teaching Jobs' },
-  ]
+  { name: '🏛️ Govt Jobs', slug: 'government' },
+  { name: '🏦 Banking',   slug: 'banking' },
+  { name: '🚂 Railway',   slug: 'railway' },
+  { name: '💻 IT Jobs',   slug: 'it-software' },
+  { name: '🛡️ Defence',  slug: 'defence' },
+  { name: '📚 Teaching',  slug: 'teaching' },
+  { name: '💼 Private',   slug: 'private' },
+]
 
   async function filterByCategory(cat) {
     setLoading(true)

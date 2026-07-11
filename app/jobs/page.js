@@ -46,14 +46,14 @@ useEffect(() => {
   }
 
   const categories = [
-    { name: '🏛️ Govt Jobs', slug: 'Government Jobs' },
-    { name: '🏦 Banking',   slug: 'Banking Jobs' },
-    { name: '🚂 Railway',   slug: 'Railway Jobs' },
-    { name: '💻 IT Jobs',   slug: 'IT & Software' },
-    { name: '🛡️ Defence',  slug: 'Defence Jobs' },
-    { name: '📚 Teaching',  slug: 'Teaching Jobs' },
-    { name: '💼 Private',   slug: 'Private Jobs' },
-  ]
+  { name: '🏛️ Govt Jobs', slug: 'government' },
+  { name: '🏦 Banking',   slug: 'banking' },
+  { name: '🚂 Railway',   slug: 'railway' },
+  { name: '💻 IT Jobs',   slug: 'it-software' },
+  { name: '🛡️ Defence',  slug: 'defence' },
+  { name: '📚 Teaching',  slug: 'teaching' },
+  { name: '💼 Private',   slug: 'private' },
+]
 
   return (
     <div style={{maxWidth:'900px', margin:'0 auto', padding:'24px 16px'}}>
