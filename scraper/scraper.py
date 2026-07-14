@@ -22,17 +22,17 @@ def get_existing_titles():
 def determine_category(title):
     """Auto-detect category from job title"""
     title_lower = title.lower()
-    if any(word in title_lower for word in ['railway', 'rrb', 'rrb ntpc', 'loco']):
+    if any(word in title_lower for word in ['railway', 'rrb', 'ntpc', 'loco pilot', 'station master']):
         return 'railway'
-    elif any(word in title_lower for word in ['bank', 'sbi', 'ibps', 'rbi', 'nabard']):
+    elif any(word in title_lower for word in ['bank', 'sbi', 'ibps', 'rbi', 'nabard', 'ippb', 'clerk', 'po ', 'probationary']):
         return 'banking'
-    elif any(word in title_lower for word in ['army', 'navy', 'air force', 'cisf', 'crpf', 'bsf', 'defence', 'military']):
+    elif any(word in title_lower for word in ['army', 'navy', 'air force', 'cisf', 'crpf', 'bsf', 'itbp', 'ssb', 'defence', 'military', 'soldier', 'constable', 'paramilitary']):
         return 'defence'
-    elif any(word in title_lower for word in ['teacher', 'tgt', 'pgt', 'lecturer', 'professor', 'kvs', 'nvs']):
+    elif any(word in title_lower for word in ['teacher', 'tgt', 'pgt', 'lecturer', 'professor', 'kvs', 'nvs', 'principal', 'headmaster', 'faculty']):
         return 'teaching'
-    elif any(word in title_lower for word in ['software', 'developer', 'engineer', 'it ', 'tech', 'programmer']):
+    elif any(word in title_lower for word in ['software', 'developer', 'programmer', 'data scientist', 'web developer', 'android', 'ios developer']):
         return 'it-software'
-    elif any(word in title_lower for word in ['private', 'ltd', 'pvt', 'company']):
+    elif any(word in title_lower for word in ['private', 'ltd', 'pvt', 'limited', 'technologies', 'solutions']):
         return 'private'
     else:
         return 'government'
