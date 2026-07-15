@@ -60,7 +60,21 @@ def is_real_job(title):
     if not any(kw in title_lower for kw in JOB_KEYWORDS):
         return False
     return True
-
+def generate_overview(title, category):
+    """Generate a unique overview based on job title and category"""
+    category_context = {
+        'railway': 'This recruitment is conducted by the Railway Recruitment Board (RRB) for various posts in Indian Railways, one of the largest employers in India.',
+        'banking': 'This recruitment is conducted for positions in the banking sector, offering stable government or public sector bank careers with good growth opportunities.',
+        'defence': 'This recruitment is for defence and paramilitary forces, offering the opportunity to serve the nation with attractive pay scales and additional allowances.',
+        'teaching': 'This recruitment is for teaching positions in government or government-aided institutions, ideal for candidates with a passion for education.',
+        'it-software': 'This is a private sector opportunity in the IT and software industry, suited for candidates with technical skills and relevant qualifications.',
+        'private': 'This is a private sector job opportunity offering competitive salary and career growth in a corporate environment.',
+        'government': 'This recruitment is conducted by a government department, offering job security, government benefits and a stable career path.',
+    }
+    
+    context = category_context.get(category, category_context['government'])
+    
+    return f'{title} — {context} Candidates interested in this opportunity should review the complete eligibility criteria, age limit, and selection process on the official notification before applying. This position offers a great opportunity for candidates looking to build a career in the {category.replace("-", " ")} sector.'
 def scrape_sarkari_result():
     print("Starting scraper...")
     headers = {
@@ -101,7 +115,7 @@ def scrape_sarkari_result():
                 'job_type': 'government',
                 'location': 'All India',
                 'salary': 'As per government norms',
-                'description': f'{title}. Visit the official notification for complete details including eligibility criteria, age limit, selection process and application procedure.',
+                'description':generate_overview(title, category),
                 'apply_link': apply_link,
                 'last_date': 'Check official notification',
                 'is_active': True,
