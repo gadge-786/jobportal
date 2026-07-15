@@ -79,7 +79,7 @@ export default function JobDetail({ params }) {
 
       <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
         <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>Important Information</h2>
-        <ul style={{margin:'0', padding:'0 0 0 18px', color:'#4b5563', lineHeight:'2', fontSize:'14px'}}>
+        <ul style={{margin:'0', padding:'0 0 0 18px', color:'#4b5563', lineHeight:'2', fontSize:'14px', listStyleType:'disc'}}>
           <li>Read the official notification carefully before applying</li>
           <li>Check eligibility criteria — age limit, education qualification</li>
           <li>Keep all required documents ready before filling the form</li>
@@ -91,7 +91,7 @@ export default function JobDetail({ params }) {
 
       <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
         <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>How to Apply</h2>
-        <ol style={{margin:'0', padding:'0 0 0 18px', color:'#4b5563', lineHeight:'2.2', fontSize:'14px'}}>
+        <ol style={{margin:'0', padding:'0 0 0 18px', color:'#4b5563', lineHeight:'2.2', fontSize:'14px', listStyleType:'decimal'}}>
           <li>Click the Apply Now button below to visit the official website</li>
           <li>Find the recruitment notification and read it completely</li>
           <li>Click on the online application link</li>
