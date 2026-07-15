@@ -84,9 +84,32 @@ export default function JobDetail({ params }) {
         <p style={{color:'#6b7280', fontSize:'14px', marginBottom:'16px'}}>
           Always apply through the official website only. JobsIndia does not charge any fee.
         </p>
-         <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 48px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'17px'}}>
-          Apply Now - Official Website
-        </a>
+          {job.details_table && Object.keys(job.details_table).length > 0 && (
+          <div style={{textAlign:'left', background:'#f9fafb', borderRadius:'10px', padding:'16px', marginBottom:'20px'}}>
+            <h3 style={{fontSize:'15px', fontWeight:'600', color:'#111827', marginBottom:'10px'}}>Job Details</h3>
+            <table style={{width:'100%', borderCollapse:'collapse', fontSize:'14px'}}>
+              <tbody>
+                {Object.entries(job.details_table).map(([label, value]) => (
+                  <tr key={label} style={{borderBottom:'1px solid #e5e7eb'}}>
+                    <td style={{padding:'8px 8px 8px 0', color:'#6b7280', fontWeight:'500', width:'40%', verticalAlign:'top'}}>{label}</td>
+                    <td style={{padding:'8px 0', color:'#111827'}}>{value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>
+          <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
+            Apply Now
+          </a>
+          {job.notification_pdf && (
+            <a href={job.notification_pdf} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:'white', color:categoryColor, border:'2px solid ' + categoryColor, padding:'14px 38px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
+              View Notification PDF
+            </a>
+          )}
+        </div>
         <div style={{marginTop:'16px'}}>
           <Link href="/" style={{color:'#6b7280', fontSize:'13px', textDecoration:'none'}}>
             Browse More Jobs

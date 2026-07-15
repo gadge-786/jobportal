@@ -61,48 +61,43 @@ def is_real_job(title):
     return True
 
 def extract_job_details(detail_url):
-    """Visit the individual job page and extract vacancy, dates, official link, PDF link"""
+    """Visit the individual job page and extract structured table data"""
     result = {
-        'vacancy': None,
-        'important_dates': None,
         'official_link': None,
         'pdf_link': None,
-        'qualification': None,
-        'age_limit': None,
+        'details_table': {},
     }
     try:
         response = requests.get(detail_url, headers=HEADERS, timeout=15)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
-        page_text = soup.get_text(separator=' ', strip=True)
 
-        # Try to find vacancy numbers
-        vacancy_match = re.search(r'(?:total\s+vacanc\w*|no\.?\s+of\s+post\w*)[:\s]*(\d[\d,]*)', page_text, re.IGNORECASE)
-        if vacancy_match:
-            result['vacancy'] = vacancy_match.group(1)
+        # Extract all tables — most job sites use tables for Important Dates, Vacancy Details, Fee etc.
+        for table in soup.find_all('table'):
+            rows = table.find_all('tr')
+            for row in rows:
+                cells = row.find_all(['td', 'th'])
+                if len(cells) >= 2:
+                    label = cells[0].get_text(strip=True)
+                    value = cells[1].get_text(strip=True)
+                    if label and value and len(label) < 60 and len(value) < 200:
+                        result['details_table'][label] = value
 
-        # Try to find qualification
-        qual_match = re.search(r'(?:qualification|eligibility)[:\s]*([^.]{10,150})', page_text, re.IGNORECASE)
-        if qual_match:
-            result['qualification'] = qual_match.group(1).strip()
-
-        # Try to find age limit
-        age_match = re.search(r'age\s*limit[:\s]*([^.]{5,100})', page_text, re.IGNORECASE)
-        if age_match:
-            result['age_limit'] = age_match.group(1).strip()
-
-        # Find official website link — look for links containing .gov.in or .nic.in
-        for link in soup.find_all('a', href=True):
-            href = link['href']
-            if ('.gov.in' in href or '.nic.in' in href) and 'freejobalert' not in href:
-                result['official_link'] = href
-                break
-
-        # Find PDF link
+        # Find PDF notification link specifically
         for link in soup.find_all('a', href=True):
             href = link['href']
             if href.lower().endswith('.pdf'):
-                result['pdf_link'] = href
+                result['pdf_link'] = href if href.startswith('http') else f"https://www.freejobalert.com{href}"
+                break
+
+        # Find the actual "apply online" link — usually has "apply" in the link text, and is NOT a pdf
+        for link in soup.find_all('a', href=True):
+            href = link['href']
+            link_text = link.get_text(strip=True).lower()
+            if href.lower().endswith('.pdf'):
+                continue
+            if ('.gov.in' in href or '.nic.in' in href) and 'freejobalert' not in href:
+                result['official_link'] = href
                 break
 
     except Exception as e:
@@ -110,17 +105,8 @@ def extract_job_details(detail_url):
 
     return result
 
-def build_description(title, category, details):
-    """Build a rich description using extracted details"""
-    parts = [title + '.']
-
-    if details.get('vacancy'):
-        parts.append(f"Total vacancies: {details['vacancy']}.")
-    if details.get('qualification'):
-        parts.append(f"Qualification required: {details['qualification']}.")
-    if details.get('age_limit'):
-        parts.append(f"Age limit: {details['age_limit']}.")
-
+def build_description(title, category):
+    """Short, clean overview — detailed info now comes from the table separately"""
     category_line = {
         'railway': 'This recruitment is conducted by the Railway Recruitment Board for posts in Indian Railways.',
         'banking': 'This recruitment is for positions in the banking sector.',
@@ -129,9 +115,7 @@ def build_description(title, category, details):
         'it-software': 'This is a private sector IT and software industry opportunity.',
         'government': 'This recruitment is conducted by a government department.',
     }
-    parts.append(category_line.get(category, category_line['government']))
-
-    return ' '.join(parts)
+    return f"{title}. {category_line.get(category, category_line['government'])} Full details including vacancies, important dates and eligibility are listed below."
 
 def scrape_freejobalert():
     print("Starting scraper for freejobalert.com...")
@@ -168,6 +152,7 @@ def scrape_freejobalert():
 
             # Use official govt link if found, otherwise fallback to the freejobalert page
             apply_link = details.get('official_link') or detail_url
+            pdf_link = details.get('pdf_link')
 
             job_data = {
                 'title': title,
@@ -176,8 +161,10 @@ def scrape_freejobalert():
                 'job_type': 'government',
                 'location': 'All India',
                 'salary': 'As per government norms',
-                'description': build_description(title, category, details),
+                'description': build_description(title, category),
                 'apply_link': apply_link,
+                'notification_pdf': pdf_link,
+                'details_table': details.get('details_table') or {},
                 'last_date': 'Check official notification',
                 'is_active': True,
                 'is_featured': False
