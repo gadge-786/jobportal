@@ -77,30 +77,8 @@ export default function JobDetail({ params }) {
         <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'15px'}}>{job.description}</p>
       </div>
 
-      <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
-        <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>Important Information</h2>
-        <ul style={{margin:'0', padding:'0 0 0 18px', color:'#4b5563', lineHeight:'2', fontSize:'14px', listStyleType:'disc'}}>
-          <li>Read the official notification carefully before applying</li>
-          <li>Check eligibility criteria — age limit, education qualification</li>
-          <li>Keep all required documents ready before filling the form</li>
-          <li>Pay application fee if applicable before last date</li>
-          <li>Take printout of application form after successful submission</li>
-          <li>Last date to apply: {job.last_date}</li>
-        </ul>
-      </div>
+     
 
-      <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
-        <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>How to Apply</h2>
-        <ol style={{margin:'0', padding:'0 0 0 18px', color:'#4b5563', lineHeight:'2.2', fontSize:'14px', listStyleType:'decimal'}}>
-          <li>Click the Apply Now button below to visit the official website</li>
-          <li>Find the recruitment notification and read it completely</li>
-          <li>Click on the online application link</li>
-          <li>Fill in your personal details and education qualification</li>
-          <li>Upload required documents — photo, signature, certificates</li>
-          <li>Pay application fee if required</li>
-          <li>Submit the form and save the confirmation number</li>
-        </ol>
-      </div>
 
       <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', textAlign:'center'}}>
         <p style={{color:'#6b7280', fontSize:'14px', marginBottom:'16px'}}>

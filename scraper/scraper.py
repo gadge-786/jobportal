@@ -4,13 +4,17 @@ from supabase import create_client
 from dotenv import load_dotenv
 import os
 import time
+import re
 
 load_dotenv()
 
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')
-
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+}
 
 SKIP_KEYWORDS = [
     'android app', 'ios app', 'apple app', 'youtube', 'instagram',
@@ -31,30 +35,17 @@ def get_existing_titles():
     response = supabase.table('jobs').select('title').execute()
     return {job['title'].lower() for job in response.data}
 
-def generate_overview(title, category):
-    category_context = {
-        'railway': 'This recruitment is conducted by the Railway Recruitment Board (RRB) for various posts in Indian Railways, one of the largest employers in India.',
-        'banking': 'This recruitment is conducted for positions in the banking sector, offering stable government or public sector bank careers with good growth opportunities.',
-        'defence': 'This recruitment is for defence and paramilitary forces, offering the opportunity to serve the nation with attractive pay scales and additional allowances.',
-        'teaching': 'This recruitment is for teaching positions in government or government-aided institutions, ideal for candidates with a passion for education.',
-        'it-software': 'This is a private sector opportunity in the IT and software industry, suited for candidates with technical skills and relevant qualifications.',
-        'private': 'This is a private sector job opportunity offering competitive salary and career growth in a corporate environment.',
-        'government': 'This recruitment is conducted by a government department, offering job security, government benefits and a stable career path.',
-    }
-    context = category_context.get(category, category_context['government'])
-    return f'{title} — {context} Candidates interested in this opportunity should review the complete eligibility criteria, age limit, and selection process on the official notification before applying.'
-
 def determine_category(title):
     title_lower = title.lower()
-    if any(word in title_lower for word in ['railway', 'rrb', 'ntpc', 'loco pilot', 'station master', 'rpf']):
+    if any(w in title_lower for w in ['railway', 'rrb', 'ntpc', 'loco pilot', 'station master', 'rpf']):
         return 'railway'
-    elif any(word in title_lower for word in ['bank', 'sbi', 'ibps', 'rbi', 'nabard', 'ippb', 'clerk', ' po ', 'probationary officer']):
+    elif any(w in title_lower for w in ['bank', 'sbi', 'ibps', 'rbi', 'nabard', 'ippb', 'clerk', ' po ', 'probationary officer']):
         return 'banking'
-    elif any(word in title_lower for word in ['army', 'navy', 'air force', 'cisf', 'crpf', 'bsf', 'itbp', 'ssb', 'defence', 'military', 'soldier', 'paramilitary', 'coast guard', 'agniveer']):
+    elif any(w in title_lower for w in ['army', 'navy', 'air force', 'cisf', 'crpf', 'bsf', 'itbp', 'ssb', 'defence', 'military', 'soldier', 'paramilitary', 'coast guard', 'agniveer']):
         return 'defence'
-    elif any(word in title_lower for word in ['teacher', 'tgt', 'pgt', 'lecturer', 'professor', 'kvs', 'nvs', 'principal', 'headmaster', 'faculty', 'teaching']):
+    elif any(w in title_lower for w in ['teacher', 'tgt', 'pgt', 'lecturer', 'professor', 'kvs', 'nvs', 'principal', 'headmaster', 'faculty', 'teaching']):
         return 'teaching'
-    elif any(word in title_lower for word in ['software', 'developer', 'programmer', 'data scientist', 'web developer', 'android developer', 'ios developer']):
+    elif any(w in title_lower for w in ['software', 'developer', 'programmer', 'data scientist', 'web developer']):
         return 'it-software'
     else:
         return 'government'
@@ -69,14 +60,84 @@ def is_real_job(title):
         return False
     return True
 
-def scrape_freejobalert():
-    print("Starting scraper for freejobalert.com...")
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+def extract_job_details(detail_url):
+    """Visit the individual job page and extract vacancy, dates, official link, PDF link"""
+    result = {
+        'vacancy': None,
+        'important_dates': None,
+        'official_link': None,
+        'pdf_link': None,
+        'qualification': None,
+        'age_limit': None,
     }
     try:
+        response = requests.get(detail_url, headers=HEADERS, timeout=15)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'html.parser')
+        page_text = soup.get_text(separator=' ', strip=True)
+
+        # Try to find vacancy numbers
+        vacancy_match = re.search(r'(?:total\s+vacanc\w*|no\.?\s+of\s+post\w*)[:\s]*(\d[\d,]*)', page_text, re.IGNORECASE)
+        if vacancy_match:
+            result['vacancy'] = vacancy_match.group(1)
+
+        # Try to find qualification
+        qual_match = re.search(r'(?:qualification|eligibility)[:\s]*([^.]{10,150})', page_text, re.IGNORECASE)
+        if qual_match:
+            result['qualification'] = qual_match.group(1).strip()
+
+        # Try to find age limit
+        age_match = re.search(r'age\s*limit[:\s]*([^.]{5,100})', page_text, re.IGNORECASE)
+        if age_match:
+            result['age_limit'] = age_match.group(1).strip()
+
+        # Find official website link — look for links containing .gov.in or .nic.in
+        for link in soup.find_all('a', href=True):
+            href = link['href']
+            if ('.gov.in' in href or '.nic.in' in href) and 'freejobalert' not in href:
+                result['official_link'] = href
+                break
+
+        # Find PDF link
+        for link in soup.find_all('a', href=True):
+            href = link['href']
+            if href.lower().endswith('.pdf'):
+                result['pdf_link'] = href
+                break
+
+    except Exception as e:
+        print(f"  Could not extract details: {e}")
+
+    return result
+
+def build_description(title, category, details):
+    """Build a rich description using extracted details"""
+    parts = [title + '.']
+
+    if details.get('vacancy'):
+        parts.append(f"Total vacancies: {details['vacancy']}.")
+    if details.get('qualification'):
+        parts.append(f"Qualification required: {details['qualification']}.")
+    if details.get('age_limit'):
+        parts.append(f"Age limit: {details['age_limit']}.")
+
+    category_line = {
+        'railway': 'This recruitment is conducted by the Railway Recruitment Board for posts in Indian Railways.',
+        'banking': 'This recruitment is for positions in the banking sector.',
+        'defence': 'This recruitment is for defence and paramilitary forces.',
+        'teaching': 'This recruitment is for teaching positions in government institutions.',
+        'it-software': 'This is a private sector IT and software industry opportunity.',
+        'government': 'This recruitment is conducted by a government department.',
+    }
+    parts.append(category_line.get(category, category_line['government']))
+
+    return ' '.join(parts)
+
+def scrape_freejobalert():
+    print("Starting scraper for freejobalert.com...")
+    try:
         url = 'https://www.freejobalert.com'
-        response = requests.get(url, headers=headers, timeout=15)
+        response = requests.get(url, headers=HEADERS, timeout=15)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
         existing_titles = get_existing_titles()
@@ -93,13 +154,20 @@ def scrape_freejobalert():
                 continue
 
             if href.startswith('/'):
-                apply_link = f"https://www.freejobalert.com{href}"
+                detail_url = f"https://www.freejobalert.com{href}"
             elif href.startswith('http'):
-                apply_link = href
+                detail_url = href
             else:
-                apply_link = f"https://www.freejobalert.com/{href}"
+                detail_url = f"https://www.freejobalert.com/{href}"
 
             category = determine_category(title)
+
+            print(f"Fetching details for: {title}")
+            details = extract_job_details(detail_url)
+            time.sleep(0.5)
+
+            # Use official govt link if found, otherwise fallback to the freejobalert page
+            apply_link = details.get('official_link') or detail_url
 
             job_data = {
                 'title': title,
@@ -108,7 +176,7 @@ def scrape_freejobalert():
                 'job_type': 'government',
                 'location': 'All India',
                 'salary': 'As per government norms',
-                'description': generate_overview(title, category),
+                'description': build_description(title, category, details),
                 'apply_link': apply_link,
                 'last_date': 'Check official notification',
                 'is_active': True,
@@ -119,15 +187,14 @@ def scrape_freejobalert():
                 supabase.table('jobs').insert(job_data).execute()
                 existing_titles.add(title.lower())
                 jobs_added += 1
-                print(f"Added [{category}]: {title}")
-                time.sleep(0.3)
-                if jobs_added >= 30:
+                print(f"✓ Added [{category}]: {title}")
+                if jobs_added >= 15:  # Lower limit since each job now takes longer
                     break
             except Exception as e:
                 print(f"Error inserting: {e}")
                 continue
 
-        print(f"\nDone! Added {jobs_added} new jobs.")
+        print(f"\nDone! Added {jobs_added} new jobs with detailed info.")
 
     except Exception as e:
         print(f"Scraping error: {e}")
