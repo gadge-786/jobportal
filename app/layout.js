@@ -2,8 +2,21 @@ import './globals.css'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'JobsIndia - Latest Govt & Private Jobs',
-  description: 'Find latest government jobs, banking jobs, railway jobs and private sector jobs in India.',
+  title: 'JobsIndia - Latest Government Jobs, Bank Jobs, Railway Jobs 2026',
+  description: 'Find latest government job notifications, bank jobs, railway recruitment, defence jobs, teaching jobs and private sector jobs in India. Updated daily with new vacancies.',
+  keywords: 'government jobs, sarkari naukri, bank jobs, railway jobs, defence jobs, teaching jobs, private jobs india, latest job notification 2026',
+  authors: [{ name: 'JobsIndia' }],
+  metadataBase: new URL('https://jobportal-topaz-nine.vercel.app/'),
+  openGraph: {
+    title: 'JobsIndia - Latest Govt & Private Jobs in India',
+    description: 'Find latest government job notifications and private sector jobs. Updated daily.',
+    type: 'website',
+    locale: 'en_IN',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({ children }) {
