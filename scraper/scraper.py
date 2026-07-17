@@ -72,16 +72,58 @@ def extract_job_details(detail_url):
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        # Extract all tables — most job sites use tables for Important Dates, Vacancy Details, Fee etc.
+        # Extract details from ONLY the first table that looks like genuine job details
+        # (must contain at least 2 of these keywords in its labels to qualify)
+        identifying_keywords = ['organization', 'organisation', 'vacanc', 'qualification',
+                                 'official website', 'post name', 'age limit', 'notification',
+                                 'notice number', 'selection process']
+
+        # Values that indicate header leakage / garbage rows — skip these
+        bad_values = ['details', 'particulars', 'last date', 'date', 'posts', 'post name',
+                      'set a', 'set b', 'set c', 'set d']
+
+        found_valid_table = False
+
         for table in soup.find_all('table'):
+            if found_valid_table:
+                break  # Stop after we've found and processed the correct table
+
             rows = table.find_all('tr')
+            temp_rows = []
+            keyword_match_count = 0
+
             for row in rows:
                 cells = row.find_all(['td', 'th'])
                 if len(cells) >= 2:
                     label = cells[0].get_text(strip=True)
                     value = cells[1].get_text(strip=True)
-                    if label and value and len(label) < 60 and len(value) < 200:
-                        result['details_table'][label] = value
+
+                    if not label or not value or len(label) > 60 or len(value) > 200:
+                        continue
+
+                    label_lower = label.lower()
+                    value_lower = value.lower()
+
+                    # Skip garbage rows
+                    if value_lower in bad_values:
+                        continue
+                    if label.replace('.', '').isdigit():
+                        continue
+                    if value.strip().upper() in ['A', 'B', 'C', 'D', 'DROPPED']:
+                        continue
+                    # Skip rows that look like a related-jobs list (contains "Posts" with a number and a dash)
+                    if re.search(r'-\s*\d+\s*posts?', label_lower) or re.search(r'-\s*\d+\s*posts?', value_lower):
+                        continue
+
+                    temp_rows.append((label, value))
+                    if any(kw in label_lower for kw in identifying_keywords):
+                        keyword_match_count += 1
+
+            # This table qualifies as the "real" details table if it has at least 2 identifying keywords
+            if keyword_match_count >= 2:
+                for label, value in temp_rows:
+                    result['details_table'][label] = value
+                found_valid_table = True
 
         # Find PDF notification link specifically
         for link in soup.find_all('a', href=True):
@@ -93,7 +135,6 @@ def extract_job_details(detail_url):
         # Find the actual "apply online" link — usually has "apply" in the link text, and is NOT a pdf
         for link in soup.find_all('a', href=True):
             href = link['href']
-            link_text = link.get_text(strip=True).lower()
             if href.lower().endswith('.pdf'):
                 continue
             if ('.gov.in' in href or '.nic.in' in href) and 'freejobalert' not in href:
