@@ -1,5 +1,6 @@
 import './globals.css'
 import Link from 'next/link'
+import { Analytics } from '@vercel/analytics/next'
 
 export const metadata = {
   title: 'JobsIndia - Latest Government Jobs, Bank Jobs, Railway Jobs 2026',
@@ -46,6 +47,7 @@ export default function RootLayout({ children }) {
         <footer style={{background:'#111827', color:'#9ca3af', textAlign:'center', padding:'20px', fontSize:'13px'}}>
           © 2025 JobsIndia. All rights reserved. | Latest Govt & Private Jobs
         </footer>
+        <Analytics />
       </body>
     </html>
   )
