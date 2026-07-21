@@ -19,7 +19,8 @@ export default function Contact() {
             <span style={{fontSize:'20px'}}>📧</span>
             <div>
               <div style={{fontSize:'12px', color:'#6b7280'}}>Email</div>
-              <div style={{fontSize:'14px', color:'#111827', fontWeight:'500'}}>vyankateshgadge8@gmail.com</div>
+              <div style={{fontSize:'14px', color:'#111827', fontWeight:'500'}}>dwarsing.contact@gmail.com
+            </div>
             </div>
           </div>
 
@@ -44,7 +45,8 @@ export default function Contact() {
       <div style={{background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:'12px', padding:'20px'}}>
         <h2 style={{fontSize:'16px', fontWeight:'600', color:'#111827', marginBottom:'8px'}}>📢 Interested in Advertising?</h2>
         <p style={{fontSize:'14px', color:'#4b5563', lineHeight:'1.6'}}>
-          JobsIndia reaches job seekers looking for government and private sector opportunities across India. If you would like to advertise your coaching institute, company, or service on our platform, email us at vyankateshgadge8@gmail.com with the subject line &quot;Advertisement Inquiry.&quot;
+          JobsIndia reaches job seekers looking for government and private sector opportunities across India. If you would like to advertise your coaching institute, company, or service on our platform, email us at dwarsing.contact@gmail.com
+         with the subject line &quot;Advertisement Inquiry.&quot;
         </p>
       </div>
     </div>
