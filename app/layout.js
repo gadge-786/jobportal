@@ -43,9 +43,13 @@ export default function RootLayout({ children }) {
         </main>
 
         {/* FOOTER */}
-        <footer style={{background:'#111827', color:'#9ca3af', textAlign:'center', padding:'20px', fontSize:'13px'}}>
-          © 2025 JobsIndia. All rights reserved. | Latest Govt & Private Jobs
-        </footer>
+        <footer style={{background:'#111827', color:'#9ca3af', textAlign:'center', padding:'24px 20px', fontSize:'13px'}}>
+  <div style={{marginBottom:'10px'}}>
+    <Link href="/privacy-policy" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Privacy Policy</Link>
+    <Link href="/contact" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Contact Us</Link>
+  </div>
+  © 2026 JobsIndia. All rights reserved. | Latest Govt & Private Jobs
+</footer>
       </body>
     </html>
   )
