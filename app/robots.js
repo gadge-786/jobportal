@@ -5,6 +5,6 @@ export default function robots() {
       allow: '/',
       disallow: ['/api/'],
     },
-    sitemap: 'https://jobportal-topaz-nine.vercel.app/sitemap.xml',
+    sitemap: 'https://dwarsing.in/sitemap.xml',
   }
 }

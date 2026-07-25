@@ -6,7 +6,7 @@ export const metadata = {
   description: 'Find latest government job notifications, bank jobs, railway recruitment, defence jobs, teaching jobs and private sector jobs in India. Updated daily with new vacancies.',
   keywords: 'government jobs, sarkari naukri, bank jobs, railway jobs, defence jobs, teaching jobs, private jobs india, latest job notification 2026',
   authors: [{ name: 'JobsIndia' }],
-  metadataBase: new URL('https://jobportal-topaz-nine.vercel.app/'),
+  metadataBase: new URL('https://dwarsing.in'),
   openGraph: {
     title: 'JobsIndia - Latest Govt & Private Jobs in India',
     description: 'Find latest government job notifications and private sector jobs. Updated daily.',

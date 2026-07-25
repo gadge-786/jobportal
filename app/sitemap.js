@@ -6,7 +6,7 @@ const supabase = createClient(
 )
 
 export default async function sitemap() {
-  const baseUrl = 'https://jobportal-topaz-nine.vercel.app'
+  const baseUrl = 'https://dwarsing.in'
 
   const { data: jobs } = await supabase
     .from('jobs')
