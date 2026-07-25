@@ -14,11 +14,11 @@ export default async function sitemap() {
     .eq('is_active', true)
 
   const jobUrls = (jobs || []).map((job) => ({
-    url: `${baseUrl}/jobs/${job.id}`,
-    lastModified: job.created_at,
-    changeFrequency: 'daily',
-    priority: 0.8,
-  }))
+  url: `${baseUrl}/jobs/${job.id}`,
+  lastModified: new Date(job.created_at).toISOString(),
+  changeFrequency: 'daily',
+  priority: 0.8,
+}))
 
   const staticUrls = [
     {
