@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Contact Us | JobsIndia',
-  description: 'Get in touch with JobsIndia team for queries, feedback or advertisement opportunities.',
+  title: 'Contact Us | DwarSing',
+  description: 'Get in touch with DwarSing team for queries, feedback or advertisement opportunities.',
 }
 
 export default function Contact() {
@@ -45,7 +45,7 @@ export default function Contact() {
       <div style={{background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:'12px', padding:'20px'}}>
         <h2 style={{fontSize:'16px', fontWeight:'600', color:'#111827', marginBottom:'8px'}}>📢 Interested in Advertising?</h2>
         <p style={{fontSize:'14px', color:'#4b5563', lineHeight:'1.6'}}>
-          JobsIndia reaches job seekers looking for government and private sector opportunities across India. If you would like to advertise your coaching institute, company, or service on our platform, email us at dwarsing.contact@gmail.com
+          DwarSing reaches job seekers looking for government and private sector opportunities across India. If you would like to advertise your coaching institute, company, or service on our platform, email us at dwarsing.contact@gmail.com
          with the subject line &quot;Advertisement Inquiry.&quot;
         </p>
       </div>

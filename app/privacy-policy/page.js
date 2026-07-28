@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Privacy Policy | JobsIndia',
+  title: 'Privacy Policy | DwarSing',
   description: 'Privacy Policy for JobsIndia - how we collect, use and protect your information.',
 }
 
@@ -10,7 +10,7 @@ export default function PrivacyPolicy() {
       <p style={{fontSize:'13px', color:'#6b7280', marginBottom:'32px'}}>Last updated: July 2026</p>
 
       <h2 style={{fontSize:'18px', fontWeight:'600', color:'#111827', marginTop:'28px', marginBottom:'10px'}}>1. Introduction</h2>
-      <p>Welcome to JobsIndia (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.</p>
+      <p>Welcome to DwarSing (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.</p>
 
       <h2 style={{fontSize:'18px', fontWeight:'600', color:'#111827', marginTop:'28px', marginBottom:'10px'}}>2. Information We Collect</h2>
       <p>We may collect the following types of information:</p>

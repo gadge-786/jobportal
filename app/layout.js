@@ -2,13 +2,13 @@ import './globals.css'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'JobsIndia - Latest Government Jobs, Bank Jobs, Railway Jobs 2026',
+  title: 'DwarSing - Latest Government Jobs, Bank Jobs, Railway Jobs 2026',
   description: 'Find latest government job notifications, bank jobs, railway recruitment, defence jobs, teaching jobs and private sector jobs in India. Updated daily with new vacancies.',
   keywords: 'government jobs, sarkari naukri, bank jobs, railway jobs, defence jobs, teaching jobs, private jobs india, latest job notification 2026',
-  authors: [{ name: 'JobsIndia' }],
+  authors: [{ name: 'DwarSing' }],
   metadataBase: new URL('https://dwarsing.in'),
   openGraph: {
-    title: 'JobsIndia - Latest Govt & Private Jobs in India',
+    title: 'DwarSing - Latest Govt & Private Jobs in India',
     description: 'Find latest government job notifications and private sector jobs. Updated daily.',
     type: 'website',
     locale: 'en_IN',
@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
         {/* NAVBAR */}
         <nav style={{background:'#1a56db', padding:'12px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'10px'}}>
           <Link href="/" style={{color:'white', fontWeight:'bold', fontSize:'22px', textDecoration:'none'}}>
-            💼 JobsIndia
+            💼 DwarSing
           </Link>
           <div style={{display:'flex', gap:'16px', flexWrap:'wrap'}}>
             <Link href="/" style={{color:'white', textDecoration:'none', fontSize:'14px'}}>Home</Link>
@@ -48,7 +48,7 @@ export default function RootLayout({ children }) {
     <Link href="/privacy-policy" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Privacy Policy</Link>
     <Link href="/contact" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Contact Us</Link>
   </div>
-  © 2026 JobsIndia. All rights reserved. | Latest Govt & Private Jobs
+  © 2026 DwarSing. All rights reserved. | Latest Govt & Private Jobs
 </footer>
       </body>
     </html>
