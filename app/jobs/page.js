@@ -48,6 +48,7 @@ useEffect(() => {
   const categories = [
   { name: '🏛️ Govt Jobs', slug: 'government' },
   { name: '🏦 Banking',   slug: 'banking' },
+  { name: '🏛️ DCC Bank', slug: 'dcc-bank' },
   { name: '🚂 Railway',   slug: 'railway' },
   { name: '💻 IT Jobs',   slug: 'it-software' },
   { name: '🛡️ Defence',  slug: 'defence' },
