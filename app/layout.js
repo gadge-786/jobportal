@@ -1,5 +1,6 @@
 import './globals.css'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export const metadata = {
   title: 'DwarSing - Latest Government Jobs, Bank Jobs, Railway Jobs 2026',
@@ -25,9 +26,10 @@ export default function RootLayout({ children }) {
       <body>
         {/* NAVBAR */}
         <nav style={{background:'#1a56db', padding:'12px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'10px'}}>
-          <Link href="/" style={{color:'white', fontWeight:'bold', fontSize:'22px', textDecoration:'none'}}>
-            💼 DwarSing
-          </Link>
+        <Link href="/" style={{display:'flex', alignItems:'center', gap:'8px', color:'white', fontWeight:'bold', fontSize:'22px', textDecoration:'none'}}>
+        <Image src="/logo.png" alt="DwarSing Logo" width={32} height={32} style={{borderRadius:'6px'}} />
+        DwarSing
+        </Link>
           <div style={{display:'flex', gap:'16px', flexWrap:'wrap'}}>
             <Link href="/" style={{color:'white', textDecoration:'none', fontSize:'14px'}}>Home</Link>
             <Link href="/jobs" style={{color:'white', textDecoration:'none', fontSize:'14px'}}>All Jobs</Link>
