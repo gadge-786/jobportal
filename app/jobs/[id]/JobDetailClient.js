@@ -98,6 +98,36 @@ export default function JobDetailClient({ id }) {
             </table>
           </div>
         )}
+          {job.exam_pattern_table && Array.isArray(job.exam_pattern_table) && job.exam_pattern_table.length > 0 && (
+  <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
+    <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>Exam Pattern</h2>
+    {job.exam_pattern_table.map((stage, idx) => (
+      <div key={idx} style={{marginBottom: idx < job.exam_pattern_table.length - 1 ? '24px' : '0'}}>
+        <h3 style={{fontSize:'15px', fontWeight:'600', color:'#111827', marginBottom:'10px'}}>{stage.title}</h3>
+        <div style={{overflowX:'auto'}}>
+          <table style={{width:'100%', borderCollapse:'collapse', fontSize:'13px'}}>
+            <thead>
+              <tr style={{borderBottom:'2px solid #e5e7eb'}}>
+                {stage.columns.map((col) => (
+                  <th key={col} style={{textAlign:'left', padding:'8px', color:'#6b7280', fontWeight:'600'}}>{col}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {stage.rows.map((row, i) => (
+                <tr key={i} style={{borderBottom:'1px solid #f3f4f6', background: row[0]==='Total' ? '#f9fafb' : 'transparent'}}>
+                  {row.map((cell, j) => (
+                    <td key={j} style={{padding:'8px', color: j===0 ? '#111827' : '#4b5563', fontWeight: j===0 ? '500' : '400'}}>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
 
         <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>
           <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
