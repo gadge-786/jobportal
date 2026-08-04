@@ -81,7 +81,7 @@ export default function JobDetailClient({ id }) {
 
       <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', textAlign:'center'}}>
         <p style={{color:'#6b7280', fontSize:'14px', marginBottom:'16px'}}>
-          Always apply through the official website only. JobsIndia does not charge any fee.
+          Always apply through the official website only. DwarsingJobs does not charge any fee.
         </p>
           {job.details_table && Object.keys(job.details_table).length > 0 && (
           <div style={{textAlign:'left', background:'#f9fafb', borderRadius:'10px', padding:'16px', marginBottom:'20px'}}>
