@@ -98,6 +98,9 @@ export default function JobDetailClient({ id }) {
             </table>
           </div>
         )}
+          {job.exam_pattern_note && (
+  <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'15px', margin:'0 0 16px'}}>{job.exam_pattern_note}</p>
+          )}
           {job.exam_pattern_table && Array.isArray(job.exam_pattern_table) && job.exam_pattern_table.length > 0 && (
   <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
     <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>Exam Pattern</h2>
@@ -128,7 +131,65 @@ export default function JobDetailClient({ id }) {
     ))}
   </div>
 )}
+          {job.vacancy_note && (
+  <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'15px', margin:'0 0 16px'}}>{job.vacancy_note}</p>
+)}
 
+{job.vacancy_table && job.vacancy_table.rows && job.vacancy_table.rows.length > 0 && (
+  <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
+    <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>Category-wise Vacancy Details</h2>
+    <div style={{overflowX:'auto'}}>
+      <table style={{width:'100%', borderCollapse:'collapse', fontSize:'13px'}}>
+        <thead>
+          <tr style={{borderBottom:'2px solid #e5e7eb'}}>
+            {job.vacancy_table.columns.map((col) => (
+              <th key={col} style={{textAlign:'left', padding:'8px', color:'#6b7280', fontWeight:'600'}}>{col}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {job.vacancy_table.rows.map((row, i) => (
+            <tr key={i} style={{borderBottom:'1px solid #f3f4f6', background: row[0]==='Total' ? '#f9fafb' : 'transparent'}}>
+              {row.map((cell, j) => (
+                <td key={j} style={{padding:'8px', color: j===0 ? '#111827' : '#4b5563', fontWeight: j===0 ? '500' : '400'}}>{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+
+{job.salary_note && (
+  <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'15px', margin:'0 0 16px'}}>{job.salary_note}</p>
+)}
+
+{job.salary_table && job.salary_table.rows && job.salary_table.rows.length > 0 && (
+  <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
+    <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>Salary Structure</h2>
+    <div style={{overflowX:'auto'}}>
+      <table style={{width:'100%', borderCollapse:'collapse', fontSize:'13px'}}>
+        <thead>
+          <tr style={{borderBottom:'2px solid #e5e7eb'}}>
+            {job.salary_table.columns.map((col) => (
+              <th key={col} style={{textAlign:'left', padding:'8px', color:'#6b7280', fontWeight:'600'}}>{col}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {job.salary_table.rows.map((row, i) => (
+            <tr key={i} style={{borderBottom:'1px solid #f3f4f6'}}>
+              {row.map((cell, j) => (
+                <td key={j} style={{padding:'8px', color: j===0 ? '#111827' : '#4b5563', fontWeight: j===0 ? '500' : '400'}}>{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
         <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>
           <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
             Apply Now
