@@ -43,6 +43,7 @@ export default function Home() {
   { name: '🛡️ Defence',  slug: 'defence' },
   { name: '📚 Teaching',  slug: 'teaching' },
   { name: '💼 Private',   slug: 'private' },
+  { name: '🏠 WFH Jobs', slug: 'wfh' },
 ]
 
   async function filterByCategory(cat) {
