@@ -191,15 +191,20 @@ export default function JobDetailClient({ id }) {
   </div>
 )}
         <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>
-          <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
-            Apply Now
-          </a>
-          {job.notification_pdf && (
-            <a href={job.notification_pdf} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:'white', color:categoryColor, border:'2px solid ' + categoryColor, padding:'14px 38px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
-              View Notification PDF
-            </a>
-          )}
-        </div>
+  <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
+    Apply Now
+  </a>
+  {job.notification_pdf && (
+    <a href={job.notification_pdf} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:'white', color:categoryColor, border:'2px solid ' + categoryColor, padding:'14px 38px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
+      View Notification PDF
+    </a>
+  )}
+  {job.admit_card_link && (
+    <a href={job.admit_card_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:'white', color:'#059669', border:'2px solid #059669', padding:'14px 38px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
+      Download Admit Card
+    </a>
+  )}
+</div>
         <div style={{marginTop:'16px'}}>
           <Link href="/" style={{color:'#6b7280', fontSize:'13px', textDecoration:'none'}}>
             Browse More Jobs
