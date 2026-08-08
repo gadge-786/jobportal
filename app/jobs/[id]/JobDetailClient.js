@@ -75,7 +75,49 @@ export default function JobDetailClient({ id }) {
         <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>About This Job</h2>
         <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'15px'}}>{job.description}</p>
       </div>
-
+      
+      {job.timeline && Array.isArray(job.timeline) && job.timeline.length > 0 && (
+  <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
+    <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'20px'}}>Application Status Tracker</h2>
+    <div style={{position:'relative', paddingLeft:'8px'}}>
+      {job.timeline.map((stage, idx) => {
+        const isCompleted = stage.status === 'completed'
+        const isLast = idx === job.timeline.length - 1
+        return (
+          <div key={idx} style={{display:'flex', gap:'16px', position:'relative'}}>
+            <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
+              <div style={{
+                width:'16px', height:'16px', borderRadius:'50%',
+                background: isCompleted ? categoryColor : 'white',
+                border: `3px solid ${isCompleted ? categoryColor : '#d1d5db'}`,
+                flexShrink:0, zIndex:1
+              }} />
+              {!isLast && (
+                <div style={{
+                  width:'2px', flex:1, minHeight:'40px',
+                  background: isCompleted ? categoryColor : '#e5e7eb'
+                }} />
+              )}
+            </div>
+            <div style={{paddingBottom: isLast ? '0' : '24px'}}>
+              <div style={{fontSize:'14px', fontWeight:'600', color: isCompleted ? '#111827' : '#9ca3af'}}>
+                {stage.title}
+              </div>
+              <div style={{fontSize:'12px', color:'#6b7280', marginTop:'2px'}}>
+                {new Date(stage.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </div>
+              {isCompleted && (
+                <span style={{fontSize:'11px', color:categoryColor, fontWeight:'500', marginTop:'2px', display:'inline-block'}}>
+                  ✓ Completed
+                </span>
+              )}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  </div>
+)}
      
 
 
