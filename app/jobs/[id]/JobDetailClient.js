@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../../lib/supabase'
+import DataTable from '../../components/DataTable'
 
 export default function JobDetailClient({ id }) {
   const [job, setJob] = useState(null)
@@ -126,50 +127,29 @@ export default function JobDetailClient({ id }) {
           Always apply through the official website only. DwarsingJobs does not charge any fee.
         </p>
           {job.details_table && Object.keys(job.details_table).length > 0 && (
-          <div style={{textAlign:'left', background:'#f9fafb', borderRadius:'10px', padding:'16px', marginBottom:'20px'}}>
-            <h3 style={{fontSize:'15px', fontWeight:'600', color:'#111827', marginBottom:'10px'}}>Job Details</h3>
-            <table style={{width:'100%', borderCollapse:'collapse', fontSize:'14px'}}>
-              <tbody>
-                {Object.entries(job.details_table).map(([label, value]) => (
-                  <tr key={label} style={{borderBottom:'1px solid #e5e7eb'}}>
-                    <td style={{padding:'8px 8px 8px 0', color:'#6b7280', fontWeight:'500', width:'40%', verticalAlign:'top'}}>{label}</td>
-                    <td style={{padding:'8px 0', color:'#111827'}}>{value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+  <DataTable
+    title="Job Details"
+    accentColor={categoryColor}
+    columns={['Field', 'Details']}
+    rows={Object.entries(job.details_table)}
+  />
+)}
           {job.exam_pattern_note && (
   <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'15px', margin:'0 0 16px'}}>{job.exam_pattern_note}</p>
           )}
           {job.exam_pattern_table && Array.isArray(job.exam_pattern_table) && job.exam_pattern_table.length > 0 && (
-  <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
-    <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>Exam Pattern</h2>
+  <div style={{marginBottom:'4px'}}>
+    {job.exam_pattern_note && (
+      <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'14px', margin:'0 0 14px'}}>{job.exam_pattern_note}</p>
+    )}
     {job.exam_pattern_table.map((stage, idx) => (
-      <div key={idx} style={{marginBottom: idx < job.exam_pattern_table.length - 1 ? '24px' : '0'}}>
-        <h3 style={{fontSize:'15px', fontWeight:'600', color:'#111827', marginBottom:'10px'}}>{stage.title}</h3>
-        <div style={{overflowX:'auto'}}>
-          <table style={{width:'100%', borderCollapse:'collapse', fontSize:'13px'}}>
-            <thead>
-              <tr style={{borderBottom:'2px solid #e5e7eb'}}>
-                {stage.columns.map((col) => (
-                  <th key={col} style={{textAlign:'left', padding:'8px', color:'#6b7280', fontWeight:'600'}}>{col}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {stage.rows.map((row, i) => (
-                <tr key={i} style={{borderBottom:'1px solid #f3f4f6', background: row[0]==='Total' ? '#f9fafb' : 'transparent'}}>
-                  {row.map((cell, j) => (
-                    <td key={j} style={{padding:'8px', color: j===0 ? '#111827' : '#4b5563', fontWeight: j===0 ? '500' : '400'}}>{cell}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        key={idx}
+        title={stage.title}
+        accentColor={categoryColor}
+        columns={stage.columns}
+        rows={stage.rows}
+      />
     ))}
   </div>
 )}
@@ -178,29 +158,13 @@ export default function JobDetailClient({ id }) {
 )}
 
 {job.vacancy_table && job.vacancy_table.rows && job.vacancy_table.rows.length > 0 && (
-  <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
-    <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>Category-wise Vacancy Details</h2>
-    <div style={{overflowX:'auto'}}>
-      <table style={{width:'100%', borderCollapse:'collapse', fontSize:'13px'}}>
-        <thead>
-          <tr style={{borderBottom:'2px solid #e5e7eb'}}>
-            {job.vacancy_table.columns.map((col) => (
-              <th key={col} style={{textAlign:'left', padding:'8px', color:'#6b7280', fontWeight:'600'}}>{col}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {job.vacancy_table.rows.map((row, i) => (
-            <tr key={i} style={{borderBottom:'1px solid #f3f4f6', background: row[0]==='Total' ? '#f9fafb' : 'transparent'}}>
-              {row.map((cell, j) => (
-                <td key={j} style={{padding:'8px', color: j===0 ? '#111827' : '#4b5563', fontWeight: j===0 ? '500' : '400'}}>{cell}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <DataTable
+    title="Category-wise Vacancy Details"
+    subtitle={job.vacancy_note}
+    accentColor={categoryColor}
+    columns={job.vacancy_table.columns}
+    rows={job.vacancy_table.rows}
+  />
 )}
 
 {job.salary_note && (
@@ -208,29 +172,13 @@ export default function JobDetailClient({ id }) {
 )}
 
 {job.salary_table && job.salary_table.rows && job.salary_table.rows.length > 0 && (
-  <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
-    <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>Salary Structure</h2>
-    <div style={{overflowX:'auto'}}>
-      <table style={{width:'100%', borderCollapse:'collapse', fontSize:'13px'}}>
-        <thead>
-          <tr style={{borderBottom:'2px solid #e5e7eb'}}>
-            {job.salary_table.columns.map((col) => (
-              <th key={col} style={{textAlign:'left', padding:'8px', color:'#6b7280', fontWeight:'600'}}>{col}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {job.salary_table.rows.map((row, i) => (
-            <tr key={i} style={{borderBottom:'1px solid #f3f4f6'}}>
-              {row.map((cell, j) => (
-                <td key={j} style={{padding:'8px', color: j===0 ? '#111827' : '#4b5563', fontWeight: j===0 ? '500' : '400'}}>{cell}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <DataTable
+    title="Salary Structure"
+    subtitle={job.salary_note}
+    accentColor={categoryColor}
+    columns={job.salary_table.columns}
+    rows={job.salary_table.rows}
+  />
 )}
         <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>
   <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
