@@ -151,9 +151,7 @@ export default function JobDetailClient({ id }) {
     ))}
   </div>
 )}
-          {job.vacancy_note && (
-  <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'15px', margin:'0 0 16px'}}>{job.vacancy_note}</p>
-)}
+          
 
 {job.vacancy_table && job.vacancy_table.rows && job.vacancy_table.rows.length > 0 && (
   <DataTable
