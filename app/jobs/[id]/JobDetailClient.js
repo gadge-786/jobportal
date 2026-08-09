@@ -134,9 +134,7 @@ export default function JobDetailClient({ id }) {
     rows={Object.entries(job.details_table)}
   />
 )}
-          {job.exam_pattern_note && (
-  <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'15px', margin:'0 0 16px'}}>{job.exam_pattern_note}</p>
-          )}
+          
           {job.exam_pattern_table && Array.isArray(job.exam_pattern_table) && job.exam_pattern_table.length > 0 && (
   <div style={{marginBottom:'4px'}}>
     {job.exam_pattern_note && (
