@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useLanguage } from './LanguageProvider'
+import { useLanguage } from '../components/LanguageProvider'
 
 export default function Navbar() {
   const { lang, switchLanguage, t } = useLanguage()

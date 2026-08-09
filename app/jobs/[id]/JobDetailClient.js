@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../../lib/supabase'
-import DataTable from '../../components/DataTable'
+import DataTable from '../../../components/DataTable'
 
 export default function JobDetailClient({ id }) {
   const [job, setJob] = useState(null)

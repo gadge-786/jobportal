@@ -1,6 +1,6 @@
 import './globals.css'
 import { LanguageProvider } from '../app/components/LanguageProvider'
-import Navbar from '../app/components/Navbar'
+import Navbar from '../components/Navbar'
 import Link from 'next/link'
 
 export const metadata = {
