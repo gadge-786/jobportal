@@ -1,6 +1,7 @@
 import './globals.css'
+import { LanguageProvider } from '../app/components/LanguageProvider'
+import Navbar from '../app/components/Navbar'
 import Link from 'next/link'
-import Image from 'next/image'
 
 export const metadata = {
   title: 'DwarSing - Latest Government Jobs, Bank Jobs, Railway Jobs 2026',
@@ -24,34 +25,19 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        {/* NAVBAR */}
-        <nav style={{background:'#1a56db', padding:'12px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'10px'}}>
-        <Link href="/" style={{display:'flex', alignItems:'center', gap:'8px', color:'white', fontWeight:'bold', fontSize:'22px', textDecoration:'none'}}>
-        <img src="/logo.png" alt="DwarSing Logo" width={32} height={32} style={{borderRadius:'6px'}} />
-        DwarSing
-        </Link>
-          <div style={{display:'flex', gap:'16px', flexWrap:'wrap'}}>
-            <Link href="/" style={{color:'white', textDecoration:'none', fontSize:'14px'}}>Home</Link>
-            <Link href="/jobs" style={{color:'white', textDecoration:'none', fontSize:'14px'}}>All Jobs</Link>
-            <Link href="/jobs?category=government" style={{color:'white', textDecoration:'none', fontSize:'14px'}}>Govt Jobs</Link>
-            <Link href="/jobs?category=banking" style={{color:'white', textDecoration:'none', fontSize:'14px'}}>Banking</Link>
-            <Link href="/jobs?category=railway" style={{color:'white', textDecoration:'none', fontSize:'14px'}}>Railway</Link>
-          </div>
-        </nav>
-
-        {/* PAGE CONTENT */}
-        <main style={{minHeight:'80vh', background:'#f9fafb'}}>
-          {children}
-        </main>
-
-        {/* FOOTER */}
-        <footer style={{background:'#111827', color:'#9ca3af', textAlign:'center', padding:'24px 20px', fontSize:'13px'}}>
-  <div style={{marginBottom:'10px'}}>
-    <Link href="/privacy-policy" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Privacy Policy</Link>
-    <Link href="/contact" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Contact Us</Link>
-  </div>
-  © 2026 DwarSing. All rights reserved. | Latest Govt & Private Jobs
-</footer>
+        <LanguageProvider>
+          <Navbar />
+          <main style={{minHeight:'80vh', background:'#f9fafb'}}>
+            {children}
+          </main>
+          <footer style={{background:'#111827', color:'#9ca3af', textAlign:'center', padding:'24px 20px', fontSize:'13px'}}>
+            <div style={{marginBottom:'10px'}}>
+              <Link href="/privacy-policy" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Privacy Policy</Link>
+              <Link href="/contact" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Contact Us</Link>
+            </div>
+            © 2026 DwarSing. All rights reserved. | Latest Govt & Private Jobs
+          </footer>
+        </LanguageProvider>
       </body>
     </html>
   )
