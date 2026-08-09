@@ -1,5 +1,5 @@
 import './globals.css'
-import { LanguageProvider } from '../app/components/LanguageProvider'
+import { LanguageProvider } from '../components/LanguageProvider'
 import Navbar from '../components/Navbar'
 import Link from 'next/link'
 
