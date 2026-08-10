@@ -3,10 +3,12 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../../lib/supabase'
 import DataTable from '../../../components/DataTable'
+import { useLanguage } from '../../../components/LanguageProvider'
 
 export default function JobDetailClient({ id }) {
   const [job, setJob] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { t } = useLanguage()
 
   useEffect(() => {
     if (!id) return
@@ -24,13 +26,13 @@ export default function JobDetailClient({ id }) {
 
   if (loading) return (
     <div style={{textAlign:'center', padding:'80px', color:'#6b7280'}}>
-      <p>Loading job details...</p>
+      <p>{t('loading')}</p>
     </div>
   )
 
   if (!job) return (
     <div style={{textAlign:'center', padding:'80px', color:'#6b7280'}}>
-      <p>Job not found.</p>
+      <p>{t('noJobsFound')}</p>
       <Link href="/" style={{color:'#1a56db'}}>Back to Jobs</Link>
     </div>
   )
@@ -50,12 +52,12 @@ export default function JobDetailClient({ id }) {
   return (
     <div style={{maxWidth:'860px', margin:'0 auto', padding:'24px 16px'}}>
       <Link href="/" style={{color:'#1a56db', fontSize:'14px', textDecoration:'none'}}>
-        Back to Jobs
+        ← {t('backToJobs')}
       </Link>
 
       <div style={{background:categoryColor, borderRadius:'16px', padding:'28px', marginTop:'16px', color:'white'}}>
         <h1 style={{fontSize:'24px', fontWeight:'bold', margin:'8px 0 6px'}}>{job.title}</h1>
-        <p style={{fontSize:'16px', opacity:0.9, margin:'0'}}>Company: {job.company}</p>
+        <p style={{fontSize:'16px', opacity:0.9, margin:'0'}}>{t('company')}:{job.company}</p>
       </div>
 
       <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'12px', margin:'16px 0'}}>
@@ -73,13 +75,13 @@ export default function JobDetailClient({ id }) {
       </div>
 
       <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
-        <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>About This Job</h2>
+        <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>{t('aboutJob')}</h2>
         <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'15px'}}>{job.description}</p>
       </div>
       
       {job.timeline && Array.isArray(job.timeline) && job.timeline.length > 0 && (
   <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
-    <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'20px'}}>Application Status Tracker</h2>
+    <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'20px'}}>{t('applicationTracker')}</h2>
     <div style={{position:'relative', paddingLeft:'8px'}}>
       {job.timeline.map((stage, idx) => {
         const isCompleted = stage.status === 'completed'
@@ -109,7 +111,7 @@ export default function JobDetailClient({ id }) {
               </div>
               {isCompleted && (
                 <span style={{fontSize:'11px', color:categoryColor, fontWeight:'500', marginTop:'2px', display:'inline-block'}}>
-                  ✓ Completed
+                  ✓ {t('completed')}
                 </span>
               )}
             </div>
@@ -124,11 +126,11 @@ export default function JobDetailClient({ id }) {
 
       <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', textAlign:'center'}}>
         <p style={{color:'#6b7280', fontSize:'14px', marginBottom:'16px'}}>
-          Always apply through the official website only. DwarsingJobs does not charge any fee.
+          {t('applyWarning')}
         </p>
           {job.details_table && Object.keys(job.details_table).length > 0 && (
   <DataTable
-    title="Job Details"
+    title={t('jobDetails')}
     accentColor={categoryColor}
     columns={['Field', 'Details']}
     rows={Object.entries(job.details_table)}
@@ -155,7 +157,7 @@ export default function JobDetailClient({ id }) {
 
 {job.vacancy_table && job.vacancy_table.rows && job.vacancy_table.rows.length > 0 && (
   <DataTable
-    title="Category-wise Vacancy Details"
+    title={t('vacancyDetails')}
     subtitle={job.vacancy_note}
     accentColor={categoryColor}
     columns={job.vacancy_table.columns}
@@ -167,7 +169,7 @@ export default function JobDetailClient({ id }) {
 
 {job.salary_table && job.salary_table.rows && job.salary_table.rows.length > 0 && (
   <DataTable
-    title="Salary Structure"
+    title={t('salaryStructure')}
     subtitle={job.salary_note}
     accentColor={categoryColor}
     columns={job.salary_table.columns}
@@ -176,22 +178,22 @@ export default function JobDetailClient({ id }) {
 )}
         <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>
   <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
-    Apply Now
+    {t('applyNow')}
   </a>
   {job.notification_pdf && (
     <a href={job.notification_pdf} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:'white', color:categoryColor, border:'2px solid ' + categoryColor, padding:'14px 38px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
-      View Notification PDF
+      {t('viewNotification')}
     </a>
   )}
   {job.admit_card_link && (
     <a href={job.admit_card_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:'white', color:'#059669', border:'2px solid #059669', padding:'14px 38px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
-      Download Admit Card
+      {t('downloadAdmitCard')}
     </a>
   )}
 </div>
         <div style={{marginTop:'16px'}}>
           <Link href="/" style={{color:'#6b7280', fontSize:'13px', textDecoration:'none'}}>
-            Browse More Jobs
+            {t('browseMoreJobs')}
           </Link>
         </div>
       </div>

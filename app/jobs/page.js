@@ -2,8 +2,10 @@
 import { useEffect, useState, use } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
+import { useLanguage } from '../../components/LanguageProvider'
 
 export default function AllJobs({ searchParams }) {
+  const { t } = useLanguage()
   const resolvedParams = use(searchParams)
   const categoryFromUrl = resolvedParams?.category || null
 
@@ -12,9 +14,9 @@ export default function AllJobs({ searchParams }) {
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState(categoryFromUrl)
 
-useEffect(() => {
-  fetchJobs(categoryFromUrl)
-}, [categoryFromUrl])
+  useEffect(() => {
+    fetchJobs(categoryFromUrl)
+  }, [categoryFromUrl])
 
   async function fetchJobs(categoryFilter) {
     setLoading(true)
@@ -46,42 +48,39 @@ useEffect(() => {
   }
 
   const categories = [
-  { name: '🏛️ Govt Jobs', slug: 'government' },
-  { name: '🏦 Banking',   slug: 'banking' },
-  { name: '🏛️ DCC Bank', slug: 'dcc-bank' },
-  { name: '🚂 Railway',   slug: 'railway' },
-  { name: '💻 IT Jobs',   slug: 'it-software' },
-  { name: '🛡️ Defence',  slug: 'defence' },
-  { name: '📚 Teaching',  slug: 'teaching' },
-  { name: '💼 Private',   slug: 'private' },
-  { name: '🏠 WFH Jobs', slug: 'wfh' },
-]
+    { name: '🏛️ Govt Jobs', slug: 'government' },
+    { name: '🏦 Banking',   slug: 'banking' },
+    { name: '🏛️ DCC Bank', slug: 'dcc-bank' },
+    { name: '🚂 Railway',   slug: 'railway' },
+    { name: '💻 IT Jobs',   slug: 'it-software' },
+    { name: '🛡️ Defence',  slug: 'defence' },
+    { name: '📚 Teaching',  slug: 'teaching' },
+    { name: '💼 Private',   slug: 'private' },
+    { name: '🏠 WFH Jobs',  slug: 'wfh' },
+  ]
 
   return (
     <div style={{maxWidth:'900px', margin:'0 auto', padding:'24px 16px'}}>
-      <h1 style={{fontSize:'26px', fontWeight:'bold', color:'#111827', marginBottom:'6px'}}>All Job Openings</h1>
-      <p style={{color:'#6b7280', fontSize:'14px', marginBottom:'20px'}}>Browse latest govt and private jobs across India</p>
+      <h1 style={{fontSize:'26px', fontWeight:'bold', color:'#111827', marginBottom:'6px'}}>{t('allJobs')}</h1>
 
-      {/* SEARCH */}
       <div style={{display:'flex', gap:'8px', marginBottom:'20px'}}>
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSearch()}
-          placeholder="Search by job title..."
+          placeholder={t('searchPlaceholder')}
           style={{flex:1, padding:'10px 14px', borderRadius:'8px', border:'1.5px solid #e5e7eb', fontSize:'14px'}}
         />
         <button onClick={handleSearch}
           style={{padding:'10px 20px', background:'#1a56db', color:'white', border:'none', borderRadius:'8px', cursor:'pointer', fontWeight:'500'}}>
-          Search
+          {t('search')}
         </button>
       </div>
 
-      {/* CATEGORY BUTTONS */}
       <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'24px'}}>
         <button onClick={() => { setActiveCategory(null); fetchJobs(null) }}
           style={{padding:'7px 16px', borderRadius:'20px', border:'1.5px solid #6b7280', background: activeCategory===null ? '#6b7280' : 'white', color: activeCategory===null ? 'white' : '#374151', cursor:'pointer', fontSize:'13px'}}>
-          All Jobs
+          {t('allJobs')}
         </button>
         {categories.map(c => (
           <button key={c.slug} onClick={() => { setActiveCategory(c.slug); fetchJobs(c.slug) }}
@@ -91,13 +90,12 @@ useEffect(() => {
         ))}
       </div>
 
-      {!loading && <p style={{fontSize:'13px', color:'#6b7280', marginBottom:'12px'}}>Showing {jobs.length} jobs</p>}
+      {!loading && <p style={{fontSize:'13px', color:'#6b7280', marginBottom:'12px'}}>{t('latestJobs')}: {jobs.length}</p>}
 
-      {/* JOB CARDS */}
       {loading ? (
-        <p style={{textAlign:'center', color:'#6b7280', padding:'60px'}}>Loading jobs...</p>
+        <p style={{textAlign:'center', color:'#6b7280', padding:'60px'}}>{t('loading')}</p>
       ) : jobs.length === 0 ? (
-        <p style={{textAlign:'center', color:'#6b7280', padding:'60px'}}>No jobs found in this category yet.</p>
+        <p style={{textAlign:'center', color:'#6b7280', padding:'60px'}}>{t('noJobsFound')}</p>
       ) : (
         jobs.map(job => (
           <div key={job.id} style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'20px', marginBottom:'12px', boxShadow:'0 1px 4px rgba(0,0,0,0.05)'}}>
@@ -115,10 +113,10 @@ useEffect(() => {
               </span>
             </div>
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'14px', flexWrap:'wrap', gap:'8px'}}>
-              <span style={{fontSize:'12px', color:'#ef4444', fontWeight:'500'}}>⏰ Last Date: {job.last_date}</span>
+              <span style={{fontSize:'12px', color:'#ef4444', fontWeight:'500'}}>⏰ {t('lastDate')}: {job.last_date}</span>
               <Link href={`/jobs/${job.id}`}
                 style={{background:'#1a56db', color:'white', padding:'8px 18px', borderRadius:'8px', textDecoration:'none', fontSize:'13px', fontWeight:'500'}}>
-                View Details →
+                {t('viewDetails')} →
               </Link>
             </div>
           </div>
