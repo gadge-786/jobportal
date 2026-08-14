@@ -56,17 +56,17 @@ export default function JobQA({ jobId }) {
 
       <div style={{background:'#f9fafb', borderRadius:'12px', padding:'16px', marginBottom:'20px'}}>
         <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder={t('yourName')}
-          style={{width:'100%', padding:'10px 14px', borderRadius:'8px', border:'1px solid #e5e7eb', fontSize:'14px', marginBottom:'10px', boxSizing:'border-box'}}
+        value={name}
+        onChange={e => setName(e.target.value)}
+        placeholder={t('yourName')}
+        style={{width:'100%', padding:'10px 14px', borderRadius:'8px', border:'1px solid #e5e7eb', fontSize:'14px', marginBottom:'10px', boxSizing:'border-box', color:'#111827', background:'white'}}
         />
         <textarea
-          value={question}
-          onChange={e => setQuestion(e.target.value)}
-          placeholder={t('yourQuestion')}
-          rows={3}
-          style={{width:'100%', padding:'10px 14px', borderRadius:'8px', border:'1px solid #e5e7eb', fontSize:'14px', marginBottom:'10px', boxSizing:'border-box', fontFamily:'inherit', resize:'vertical'}}
+        value={question}
+        onChange={e => setQuestion(e.target.value)}
+        placeholder={t('yourQuestion')}
+        rows={3}
+        style={{width:'100%', padding:'10px 14px', borderRadius:'8px', border:'1px solid #e5e7eb', fontSize:'14px', marginBottom:'10px', boxSizing:'border-box', fontFamily:'inherit', resize:'vertical', color:'#111827', background:'white'}}
         />
         <button
           onClick={handleSubmit}
