@@ -10,6 +10,7 @@ export default function JobDetailClient({ id }) {
   const [job, setJob] = useState(null)
   const [loading, setLoading] = useState(true)
   const { t } = useLanguage()
+  const [examTest, setExamTest] = useState(null)
   
 
   useEffect(() => {
@@ -21,6 +22,15 @@ export default function JobDetailClient({ id }) {
         .eq('id', id)
         .single()
       setJob(data)
+      if (data) {
+    const { data: examData } = await supabase
+    .from('exam_tests')
+    .select('id, title')
+    .eq('job_id', data.id)
+    .eq('is_active', true)
+    .maybeSingle()
+  setExamTest(examData)
+}
       setLoading(false)
     }
     fetchJob()
@@ -56,6 +66,16 @@ export default function JobDetailClient({ id }) {
       <Link href="/" style={{color:'#1a56db', fontSize:'14px', textDecoration:'none'}}>
         ← {t('backToJobs')}
       </Link>
+
+      {examTest && (
+  <div style={{background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}cc)`, borderRadius:'16px', padding:'24px', marginBottom:'16px', color:'white', textAlign:'center'}}>
+    <h2 style={{fontSize:'18px', fontWeight:'bold', margin:'0 0 6px'}}>📝 Practice Mock Test Available</h2>
+    <p style={{fontSize:'14px', opacity:0.9, margin:'0 0 16px'}}>{examTest.title}</p>
+    <Link href={`/exam/${examTest.id}`} style={{display:'inline-block', background:'white', color:categoryColor, padding:'12px 32px', borderRadius:'10px', textDecoration:'none', fontWeight:'bold', fontSize:'15px'}}>
+      Take Mock Test →
+    </Link>
+  </div>
+  )}
 
       <div style={{background:categoryColor, borderRadius:'16px', padding:'28px', marginTop:'16px', color:'white'}}>
         <h1 style={{fontSize:'24px', fontWeight:'bold', margin:'8px 0 6px'}}>{job.title}</h1>
