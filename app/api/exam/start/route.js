@@ -32,7 +32,7 @@ export async function GET(request) {
 
   const { data: questions, error: qError } = await supabaseAdmin
     .from('exam_questions')
-    .select('id, exam_id, section_id, question_order, question_text, option_a, option_b, option_c, option_d, marks')
+    .select('id, exam_id, section_id, question_order, question_text, question_text_mr, option_a, option_b, option_c, option_d, option_a_mr, option_b_mr, option_c_mr, option_d_mr, marks')
     .eq('exam_id', examId)
     .order('question_order', { ascending: true })
 

@@ -153,33 +153,46 @@ export default function ExamPage({ params }) {
         </div>
 
         <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'24px', marginBottom:'16px'}}>
-          <p style={{fontSize:'15px', fontWeight:'600', color:'#111827', marginBottom:'20px', lineHeight:'1.6'}}>{question.question_text}</p>
-          {['A', 'B', 'C', 'D'].map(opt => {
-            const optionText = question[`option_${opt.toLowerCase()}`]
-            const isSelected = answers[question.id] === opt
-            return (
-              <div
-                key={opt}
-                onClick={() => selectAnswer(question.id, opt)}
-                style={{
-                  display:'flex', alignItems:'center', gap:'12px', padding:'12px 16px', borderRadius:'10px', marginBottom:'10px', cursor:'pointer',
-                  border: isSelected ? '2px solid #1a56db' : '1px solid #e5e7eb',
-                  background: isSelected ? '#eff6ff' : 'white'
-                }}
-              >
-                <div style={{
-                  width:'24px', height:'24px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center',
-                  fontSize:'12px', fontWeight:'bold', flexShrink:0,
-                  background: isSelected ? '#1a56db' : '#f3f4f6',
-                  color: isSelected ? 'white' : '#6b7280'
-                }}>
-                  {opt}
-                </div>
-                <span style={{fontSize:'14px', color:'#111827'}}>{optionText}</span>
-              </div>
-            )
-          })}
+  <p style={{fontSize:'15px', fontWeight:'600', color:'#111827', marginBottom: question.question_text_mr ? '4px' : '20px', lineHeight:'1.6'}}>
+    {question.question_text}
+  </p>
+  {question.question_text_mr && (
+    <p style={{fontSize:'14px', fontWeight:'500', color:'#6b7280', marginBottom:'20px', lineHeight:'1.6'}}>
+      {question.question_text_mr}
+    </p>
+  )}
+  {['A', 'B', 'C', 'D'].map(opt => {
+    const optionText = question[`option_${opt.toLowerCase()}`]
+    const optionTextMr = question[`option_${opt.toLowerCase()}_mr`]
+    const isSelected = answers[question.id] === opt
+    return (
+      <div
+        key={opt}
+        onClick={() => selectAnswer(question.id, opt)}
+        style={{
+          display:'flex', alignItems:'flex-start', gap:'12px', padding:'12px 16px', borderRadius:'10px', marginBottom:'10px', cursor:'pointer',
+          border: isSelected ? '2px solid #1a56db' : '1px solid #e5e7eb',
+          background: isSelected ? '#eff6ff' : 'white'
+        }}
+      >
+        <div style={{
+          width:'24px', height:'24px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center',
+          fontSize:'12px', fontWeight:'bold', flexShrink:0, marginTop:'1px',
+          background: isSelected ? '#1a56db' : '#f3f4f6',
+          color: isSelected ? 'white' : '#6b7280'
+        }}>
+          {opt}
         </div>
+        <div>
+          <div style={{fontSize:'14px', color:'#111827'}}>{optionText}</div>
+          {optionTextMr && (
+            <div style={{fontSize:'13px', color:'#6b7280', marginTop:'2px'}}>{optionTextMr}</div>
+          )}
+        </div>
+      </div>
+    )
+  })}
+  </div>
 
         <div style={{display:'flex', gap:'10px', marginBottom:'16px'}}>
           <button
