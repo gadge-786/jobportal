@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 export async function POST(request) {
   const body = await request.json()
-  const { examId, candidateName, answers, timeTakenSeconds } = body
+  const { examId, candidateName, userId, userEmail, userPhoto, answers, timeTakenSeconds } = body
   // answers format: { questionId: "A" | "B" | "C" | "D" | null }
 
   if (!examId || !answers) {

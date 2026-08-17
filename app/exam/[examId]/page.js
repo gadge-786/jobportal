@@ -1,6 +1,8 @@
 'use client'
 import { useEffect, useState, use, useCallback } from 'react'
 import Link from 'next/link'
+import { useAuth } from '../../../components/AuthProvider'
+import Leaderboard from '../../../components/LeaderBoard'
 
 export default function ExamPage({ params }) {
   const { examId } = use(params)
@@ -13,6 +15,7 @@ export default function ExamPage({ params }) {
   const [startTime, setStartTime] = useState(null)
   const [result, setResult] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const { user, signInWithGoogle } = useAuth()
 
   useEffect(() => {
     async function loadExam() {
@@ -38,11 +41,14 @@ export default function ExamPage({ params }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        examId,
-        candidateName: candidateName || 'Anonymous',
-        answers,
-        timeTakenSeconds: timeTaken
-      })
+  examId,
+  candidateName: user?.user_metadata?.full_name || candidateName || 'Anonymous',
+  userId: user?.id || null,
+  userEmail: user?.email || null,
+  userPhoto: user?.user_metadata?.avatar_url || null,
+  answers,
+  timeTakenSeconds: timeTaken
+  })
     })
     const data = await res.json()
     setResult(data.result)
@@ -124,12 +130,33 @@ export default function ExamPage({ params }) {
               <div style={{fontSize:'15px', fontWeight:'600', color:'#111827'}}>Unlimited</div>
             </div>
           </div>
-          <input
-            value={candidateName}
-            onChange={e => setCandidateName(e.target.value)}
-            placeholder="Your name (optional)"
-            style={{width:'100%', padding:'12px 14px', borderRadius:'8px', border:'1px solid #e5e7eb', fontSize:'14px', marginBottom:'20px', boxSizing:'border-box', color:'#111827'}}
-          />
+          {user ? (
+  <div style={{display:'flex', alignItems:'center', gap:'10px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'10px', padding:'12px 16px', marginBottom:'20px'}}>
+    {user.user_metadata?.avatar_url && (
+      <img src={user.user_metadata.avatar_url} alt="" style={{width:'32px', height:'32px', borderRadius:'50%'}} />
+    )}
+    <div>
+      <div style={{fontSize:'13px', fontWeight:'600', color:'#166534'}}>{user.user_metadata?.full_name || user.email}</div>
+      <div style={{fontSize:'11px', color:'#16a34a'}}>✓ Signed in — this attempt will appear on the leaderboard</div>
+    </div>
+  </div>
+) : (
+  <div style={{background:'#f9fafb', border:'1px solid #e5e7eb', borderRadius:'10px', padding:'14px 16px', marginBottom:'20px'}}>
+    <p style={{fontSize:'13px', color:'#6b7280', marginBottom:'10px'}}>Sign in to appear on the leaderboard (optional)</p>
+    <button
+      onClick={signInWithGoogle}
+      style={{width:'100%', padding:'10px', background:'white', border:'1px solid #d1d5db', borderRadius:'8px', fontSize:'13px', fontWeight:'500', color:'#374151', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}
+    >
+      Sign in with Google
+    </button>
+    <input
+      value={candidateName}
+      onChange={e => setCandidateName(e.target.value)}
+      placeholder="Or just enter your name to continue as guest"
+      style={{width:'100%', padding:'10px 14px', borderRadius:'8px', border:'1px solid #e5e7eb', fontSize:'13px', marginTop:'10px', boxSizing:'border-box', color:'#111827'}}
+    />
+  </div>
+)}
           <button
             onClick={startTest}
             style={{width:'100%', padding:'14px', background:'#1a56db', color:'white', border:'none', borderRadius:'10px', fontWeight:'bold', fontSize:'16px', cursor:'pointer'}}
@@ -272,7 +299,9 @@ export default function ExamPage({ params }) {
             </Link>
           </div>
         </div>
+        <Leaderboard examId={examId} />
       </div>
+      
     )
   }
 

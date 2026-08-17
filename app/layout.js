@@ -2,6 +2,7 @@ import './globals.css'
 import { LanguageProvider } from '../components/LanguageProvider'
 import Navbar from '../components/Navbar'
 import Link from 'next/link'
+import { AuthProvider } from '../components/AuthProvider'
 
 export const metadata = {
   title: 'DwarSing - Latest Government Jobs, Bank Jobs, Railway Jobs 2026',
@@ -25,20 +26,22 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <LanguageProvider>
-          <Navbar />
-          <main style={{minHeight:'80vh', background:'#f9fafb'}}>
-            {children}
-          </main>
-          <footer style={{background:'#111827', color:'#9ca3af', textAlign:'center', padding:'24px 20px', fontSize:'13px'}}>
-            <div style={{marginBottom:'10px'}}>
-              <Link href="/privacy-policy" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Privacy Policy</Link>
-              <Link href="/contact" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Contact Us</Link>
-            </div>
-            © 2026 DwarSing. All rights reserved. | Latest Govt & Private Jobs
-          </footer>
-        </LanguageProvider>
-      </body>
+  <AuthProvider>
+    <LanguageProvider>
+      <Navbar />
+      <main style={{minHeight:'80vh', background:'#f9fafb'}}>
+        {children}
+      </main>
+      <footer style={{background:'#111827', color:'#9ca3af', textAlign:'center', padding:'24px 20px', fontSize:'13px'}}>
+        <div style={{marginBottom:'10px'}}>
+          <Link href="/privacy-policy" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Privacy Policy</Link>
+          <Link href="/contact" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Contact Us</Link>
+        </div>
+        © 2026 DwarSing. All rights reserved. | Latest Govt & Private Jobs
+      </footer>
+    </LanguageProvider>
+  </AuthProvider>
+     </body>
     </html>
   )
 }
