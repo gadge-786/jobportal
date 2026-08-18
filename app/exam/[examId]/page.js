@@ -54,7 +54,7 @@ export default function ExamPage({ params }) {
     setResult(data.result)
     setStage('result')
     setSubmitting(false)
-  }, [examId, candidateName, answers, startTime, submitting])
+  }, [examId, candidateName, answers, startTime, submitting, user])
 
   useEffect(() => {
     if (stage !== 'testing') return
