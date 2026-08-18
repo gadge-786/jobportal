@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server'
 export async function POST(request) {
   const body = await request.json()
   const { examId, candidateName, userId, userEmail, userPhoto, answers, timeTakenSeconds } = body
-  // answers format: { questionId: "A" | "B" | "C" | "D" | null }
 
   if (!examId || !answers) {
     return NextResponse.json({ error: 'Missing required data' }, { status: 400 })
@@ -22,8 +21,9 @@ export async function POST(request) {
 
   const { data: questions, error: qError } = await supabaseAdmin
     .from('exam_questions')
-    .select('id, correct_option, marks')
+    .select('id, question_order, question_text, question_text_mr, option_a, option_b, option_c, option_d, option_a_mr, option_b_mr, option_c_mr, option_d_mr, correct_option, marks')
     .eq('exam_id', examId)
+    .order('question_order', { ascending: true })
 
   if (qError || !questions) {
     return NextResponse.json({ error: 'Could not load answer key' }, { status: 500 })
@@ -33,18 +33,40 @@ export async function POST(request) {
   let wrongCount = 0
   let unattemptedCount = 0
   let score = 0
+  const review = []
 
   for (const q of questions) {
-    const givenAnswer = answers[q.id]
+    const givenAnswer = answers[q.id] || null
+    let status = 'unattempted'
+
     if (!givenAnswer) {
       unattemptedCount++
     } else if (givenAnswer === q.correct_option) {
       correctCount++
       score += Number(q.marks)
+      status = 'correct'
     } else {
       wrongCount++
       score -= Number(exam.negative_marking)
+      status = 'wrong'
     }
+
+    review.push({
+      id: q.id,
+      question_text: q.question_text,
+      question_text_mr: q.question_text_mr,
+      option_a: q.option_a,
+      option_b: q.option_b,
+      option_c: q.option_c,
+      option_d: q.option_d,
+      option_a_mr: q.option_a_mr,
+      option_b_mr: q.option_b_mr,
+      option_c_mr: q.option_c_mr,
+      option_d_mr: q.option_d_mr,
+      correct_option: q.correct_option,
+      given_answer: givenAnswer,
+      status
+    })
   }
 
   const { data: attempt, error: insertError } = await supabaseAdmin
@@ -52,6 +74,9 @@ export async function POST(request) {
     .insert({
       exam_id: examId,
       candidate_name: candidateName || 'Anonymous',
+      user_id: userId,
+      user_email: userEmail,
+      user_photo: userPhoto,
       total_questions: questions.length,
       correct_count: correctCount,
       wrong_count: wrongCount,
@@ -74,6 +99,7 @@ export async function POST(request) {
       unattemptedCount,
       score
     },
+    review,
     attemptId: attempt.id
   })
 }

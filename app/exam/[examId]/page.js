@@ -6,6 +6,7 @@ import Leaderboard from '../../../components/LeaderBoard'
 
 export default function ExamPage({ params }) {
   const { examId } = use(params)
+  const { user, signInWithGoogle } = useAuth()
   const [stage, setStage] = useState('loading')
   const [examData, setExamData] = useState(null)
   const [candidateName, setCandidateName] = useState('')
@@ -14,8 +15,11 @@ export default function ExamPage({ params }) {
   const [timeLeft, setTimeLeft] = useState(0)
   const [startTime, setStartTime] = useState(null)
   const [result, setResult] = useState(null)
+  const [review, setReview] = useState([])
+  const [attemptId, setAttemptId] = useState(null)
   const [submitting, setSubmitting] = useState(false)
-  const { user, signInWithGoogle } = useAuth()
+  const [showLeaderboardPreview, setShowLeaderboardPreview] = useState(false)
+  const [showReview, setShowReview] = useState(false)
 
   useEffect(() => {
     async function loadExam() {
@@ -41,17 +45,19 @@ export default function ExamPage({ params }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-  examId,
-  candidateName: user?.user_metadata?.full_name || candidateName || 'Anonymous',
-  userId: user?.id || null,
-  userEmail: user?.email || null,
-  userPhoto: user?.user_metadata?.avatar_url || null,
-  answers,
-  timeTakenSeconds: timeTaken
-  })
+        examId,
+        candidateName: user?.user_metadata?.full_name || candidateName || 'Anonymous',
+        userId: user?.id || null,
+        userEmail: user?.email || null,
+        userPhoto: user?.user_metadata?.avatar_url || null,
+        answers,
+        timeTakenSeconds: timeTaken
+      })
     })
     const data = await res.json()
     setResult(data.result)
+    setReview(data.review || [])
+    setAttemptId(data.attemptId)
     setStage('result')
     setSubmitting(false)
   }, [examId, candidateName, answers, startTime, submitting, user])
@@ -60,14 +66,14 @@ export default function ExamPage({ params }) {
     if (stage !== 'testing') return
 
     const timer = setInterval(() => {
-    setTimeLeft(prev => {
-  if (prev <= 1) {
-    clearInterval(timer)
-    submitExam()
-    return 0
-  }
-  return prev - 1
-  })
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          submitExam()
+          return 0
+        }
+        return prev - 1
+      })
     }, 1000)
 
     return () => clearInterval(timer)
@@ -130,39 +136,55 @@ export default function ExamPage({ params }) {
               <div style={{fontSize:'15px', fontWeight:'600', color:'#111827'}}>Unlimited</div>
             </div>
           </div>
+
           {user ? (
-  <div style={{display:'flex', alignItems:'center', gap:'10px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'10px', padding:'12px 16px', marginBottom:'20px'}}>
-    {user.user_metadata?.avatar_url && (
-      <img src={user.user_metadata.avatar_url} alt="" style={{width:'32px', height:'32px', borderRadius:'50%'}} />
-    )}
-    <div>
-      <div style={{fontSize:'13px', fontWeight:'600', color:'#166534'}}>{user.user_metadata?.full_name || user.email}</div>
-      <div style={{fontSize:'11px', color:'#16a34a'}}>✓ Signed in — this attempt will appear on the leaderboard</div>
-    </div>
-  </div>
-) : (
-  <div style={{background:'#f9fafb', border:'1px solid #e5e7eb', borderRadius:'10px', padding:'14px 16px', marginBottom:'20px'}}>
-    <p style={{fontSize:'13px', color:'#6b7280', marginBottom:'10px'}}>Sign in to appear on the leaderboard (optional)</p>
-    <button
-      onClick={signInWithGoogle}
-      style={{width:'100%', padding:'10px', background:'white', border:'1px solid #d1d5db', borderRadius:'8px', fontSize:'13px', fontWeight:'500', color:'#374151', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}
-    >
-      Sign in with Google
-    </button>
-    <input
-      value={candidateName}
-      onChange={e => setCandidateName(e.target.value)}
-      placeholder="Or just enter your name to continue as guest"
-      style={{width:'100%', padding:'10px 14px', borderRadius:'8px', border:'1px solid #e5e7eb', fontSize:'13px', marginTop:'10px', boxSizing:'border-box', color:'#111827'}}
-    />
-  </div>
-)}
+            <div style={{display:'flex', alignItems:'center', gap:'10px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'10px', padding:'12px 16px', marginBottom:'20px'}}>
+              {user.user_metadata?.avatar_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.user_metadata.avatar_url} alt="" style={{width:'32px', height:'32px', borderRadius:'50%'}} />
+              )}
+              <div>
+                <div style={{fontSize:'13px', fontWeight:'600', color:'#166534'}}>{user.user_metadata?.full_name || user.email}</div>
+                <div style={{fontSize:'11px', color:'#16a34a'}}>✓ Signed in — this attempt will appear on the leaderboard</div>
+              </div>
+            </div>
+          ) : (
+            <div style={{background:'#f9fafb', border:'1px solid #e5e7eb', borderRadius:'10px', padding:'14px 16px', marginBottom:'20px'}}>
+              <p style={{fontSize:'13px', color:'#6b7280', marginBottom:'10px'}}>Sign in to appear on the leaderboard (optional)</p>
+              <button
+                onClick={signInWithGoogle}
+                style={{width:'100%', padding:'10px', background:'white', border:'1px solid #d1d5db', borderRadius:'8px', fontSize:'13px', fontWeight:'500', color:'#374151', cursor:'pointer'}}
+              >
+                Sign in with Google
+              </button>
+              <input
+                value={candidateName}
+                onChange={e => setCandidateName(e.target.value)}
+                placeholder="Or just enter your name to continue as guest"
+                style={{width:'100%', padding:'10px 14px', borderRadius:'8px', border:'1px solid #e5e7eb', fontSize:'13px', marginTop:'10px', boxSizing:'border-box', color:'#111827'}}
+              />
+            </div>
+          )}
+
           <button
             onClick={startTest}
-            style={{width:'100%', padding:'14px', background:'#1a56db', color:'white', border:'none', borderRadius:'10px', fontWeight:'bold', fontSize:'16px', cursor:'pointer'}}
+            style={{width:'100%', padding:'14px', background:'#1a56db', color:'white', border:'none', borderRadius:'10px', fontWeight:'bold', fontSize:'16px', cursor:'pointer', marginBottom:'12px'}}
           >
             Start Test
           </button>
+
+          <button
+            onClick={() => setShowLeaderboardPreview(prev => !prev)}
+            style={{width:'100%', padding:'10px', background:'white', color:'#1a56db', border:'1px solid #1a56db', borderRadius:'10px', fontWeight:'600', fontSize:'13px', cursor:'pointer'}}
+          >
+            {showLeaderboardPreview ? 'Hide Leaderboard' : '🏆 View Leaderboard'}
+          </button>
+
+          {showLeaderboardPreview && (
+            <div style={{marginTop:'16px'}}>
+              <Leaderboard examId={examId} />
+            </div>
+          )}
         </div>
       </div>
     )
@@ -180,46 +202,46 @@ export default function ExamPage({ params }) {
         </div>
 
         <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'24px', marginBottom:'16px'}}>
-  <p style={{fontSize:'15px', fontWeight:'600', color:'#111827', marginBottom: question.question_text_mr ? '4px' : '20px', lineHeight:'1.6'}}>
-    {question.question_text}
-  </p>
-  {question.question_text_mr && (
-    <p style={{fontSize:'14px', fontWeight:'500', color:'#6b7280', marginBottom:'20px', lineHeight:'1.6'}}>
-      {question.question_text_mr}
-    </p>
-  )}
-  {['A', 'B', 'C', 'D'].map(opt => {
-    const optionText = question[`option_${opt.toLowerCase()}`]
-    const optionTextMr = question[`option_${opt.toLowerCase()}_mr`]
-    const isSelected = answers[question.id] === opt
-    return (
-      <div
-        key={opt}
-        onClick={() => selectAnswer(question.id, opt)}
-        style={{
-          display:'flex', alignItems:'flex-start', gap:'12px', padding:'12px 16px', borderRadius:'10px', marginBottom:'10px', cursor:'pointer',
-          border: isSelected ? '2px solid #1a56db' : '1px solid #e5e7eb',
-          background: isSelected ? '#eff6ff' : 'white'
-        }}
-      >
-        <div style={{
-          width:'24px', height:'24px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center',
-          fontSize:'12px', fontWeight:'bold', flexShrink:0, marginTop:'1px',
-          background: isSelected ? '#1a56db' : '#f3f4f6',
-          color: isSelected ? 'white' : '#6b7280'
-        }}>
-          {opt}
-        </div>
-        <div>
-          <div style={{fontSize:'14px', color:'#111827'}}>{optionText}</div>
-          {optionTextMr && (
-            <div style={{fontSize:'13px', color:'#6b7280', marginTop:'2px'}}>{optionTextMr}</div>
+          <p style={{fontSize:'15px', fontWeight:'600', color:'#111827', marginBottom: question.question_text_mr ? '4px' : '20px', lineHeight:'1.6'}}>
+            {question.question_text}
+          </p>
+          {question.question_text_mr && (
+            <p style={{fontSize:'14px', fontWeight:'500', color:'#6b7280', marginBottom:'20px', lineHeight:'1.6'}}>
+              {question.question_text_mr}
+            </p>
           )}
+          {['A', 'B', 'C', 'D'].map(opt => {
+            const optionText = question[`option_${opt.toLowerCase()}`]
+            const optionTextMr = question[`option_${opt.toLowerCase()}_mr`]
+            const isSelected = answers[question.id] === opt
+            return (
+              <div
+                key={opt}
+                onClick={() => selectAnswer(question.id, opt)}
+                style={{
+                  display:'flex', alignItems:'flex-start', gap:'12px', padding:'12px 16px', borderRadius:'10px', marginBottom:'10px', cursor:'pointer',
+                  border: isSelected ? '2px solid #1a56db' : '1px solid #e5e7eb',
+                  background: isSelected ? '#eff6ff' : 'white'
+                }}
+              >
+                <div style={{
+                  width:'24px', height:'24px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center',
+                  fontSize:'12px', fontWeight:'bold', flexShrink:0, marginTop:'1px',
+                  background: isSelected ? '#1a56db' : '#f3f4f6',
+                  color: isSelected ? 'white' : '#6b7280'
+                }}>
+                  {opt}
+                </div>
+                <div>
+                  <div style={{fontSize:'14px', color:'#111827'}}>{optionText}</div>
+                  {optionTextMr && (
+                    <div style={{fontSize:'13px', color:'#6b7280', marginTop:'2px'}}>{optionTextMr}</div>
+                  )}
+                </div>
+              </div>
+            )
+          })}
         </div>
-      </div>
-    )
-  })}
-  </div>
 
         <div style={{display:'flex', gap:'10px', marginBottom:'16px'}}>
           <button
@@ -269,8 +291,8 @@ export default function ExamPage({ params }) {
 
   if (stage === 'result') {
     return (
-      <div style={{maxWidth:'500px', margin:'0 auto', padding:'40px 20px'}}>
-        <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'32px', textAlign:'center'}}>
+      <div style={{maxWidth:'700px', margin:'0 auto', padding:'40px 16px'}}>
+        <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'32px', textAlign:'center', marginBottom:'20px'}}>
           <h1 style={{fontSize:'20px', fontWeight:'bold', color:'#111827', marginBottom:'6px'}}>Test Completed</h1>
           <div style={{fontSize:'48px', fontWeight:'bold', color:'#1a56db', margin:'20px 0'}}>{result.score.toFixed(2)}</div>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'10px', marginBottom:'24px'}}>
@@ -299,9 +321,55 @@ export default function ExamPage({ params }) {
             </Link>
           </div>
         </div>
-        <Leaderboard examId={examId} />
+
+        <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'24px', marginBottom:'20px'}}>
+          <h2 style={{fontSize:'17px', fontWeight:'bold', color:'#111827', marginBottom:'16px'}}>🏆 Leaderboard</h2>
+          <Leaderboard examId={examId} highlightAttemptId={attemptId} currentScore={result.score} currentTime={null} />
+        </div>
+
+        <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'24px'}}>
+          <button
+            onClick={() => setShowReview(prev => !prev)}
+            style={{width:'100%', padding:'12px', background:'#f9fafb', border:'1px solid #e5e7eb', borderRadius:'10px', fontWeight:'600', fontSize:'14px', color:'#111827', cursor:'pointer'}}
+          >
+            {showReview ? 'Hide Answer Review' : '📋 Review Your Answers'}
+          </button>
+
+          {showReview && (
+            <div style={{marginTop:'20px', display:'flex', flexDirection:'column', gap:'16px'}}>
+              {review.map((q, idx) => (
+                <div key={q.id} style={{borderLeft: `4px solid ${q.status === 'correct' ? '#16a34a' : q.status === 'wrong' ? '#ef4444' : '#d1d5db'}`, paddingLeft:'14px'}}>
+                  <p style={{fontSize:'13px', fontWeight:'600', color:'#111827', marginBottom:'2px'}}>
+                    Q{idx + 1}. {q.question_text}
+                  </p>
+                  {q.question_text_mr && (
+                    <p style={{fontSize:'12px', color:'#6b7280', marginBottom:'8px'}}>{q.question_text_mr}</p>
+                  )}
+                  <div style={{display:'flex', flexDirection:'column', gap:'4px'}}>
+                    {['A', 'B', 'C', 'D'].map(opt => {
+                      const text = q[`option_${opt.toLowerCase()}`]
+                      const isCorrect = q.correct_option === opt
+                      const isGiven = q.given_answer === opt
+                      let bg = 'transparent'
+                      let color = '#6b7280'
+                      if (isCorrect) { bg = '#dcfce7'; color = '#166534' }
+                      if (isGiven && !isCorrect) { bg = '#fee2e2'; color = '#991b1b' }
+                      return (
+                        <div key={opt} style={{fontSize:'12px', padding:'6px 10px', borderRadius:'6px', background:bg, color, fontWeight: (isCorrect || isGiven) ? '600' : '400'}}>
+                          {opt}. {text} {isCorrect ? '✓ Correct Answer' : ''} {isGiven && !isCorrect ? '✗ Your Answer' : ''}
+                        </div>
+                      )
+                    })}
+                    {!q.given_answer && (
+                      <div style={{fontSize:'11px', color:'#9ca3af', marginTop:'2px'}}>Not attempted</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-      
     )
   }
 
