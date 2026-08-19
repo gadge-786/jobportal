@@ -29,7 +29,7 @@ export default function JobDetailClient({ id }) {
   .eq('job_id', data.id)
   .eq('is_active', true)
   .order('created_at', { ascending: true })
-setExamTest(examData && examData.length > 0 ? examData : null)
+setExamTests(examData && examData.length > 0 ? examData : null)
 }
       setLoading(false)
     }
