@@ -1,5 +1,60 @@
 @import "tailwindcss";
+:root {
+  --color-ink: #1C2340;
+  --color-ink-light: #2A3570;
+  --color-amber: #E2A63B;
+  --color-amber-dark: #B97F1F;
+  --color-paper: #FAF7F1;
+  --color-card: #FFFFFF;
+  --color-border: #E7E1D3;
+  --color-muted: #756F5E;
+  --color-success: #1F8A5F;
+  --color-danger: #C1443A;
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Work Sans', sans-serif;
+  --font-marathi: 'Mukta', sans-serif;
+}
 
+body {
+  font-family: var(--font-body);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  margin: 0;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+}
+
+.perforated-divider {
+  border: none;
+  border-top: 2px dashed var(--color-border);
+  margin: 0;
+  position: relative;
+}
+
+.card-lift {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(28, 35, 64, 0.08);
+}
+
+.featured-ribbon {
+  position: absolute;
+  top: 14px;
+  right: -32px;
+  background: var(--color-amber);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 4px 36px;
+  transform: rotate(45deg);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
 :root {
   --background: #ffffff;
   --foreground: #171717;

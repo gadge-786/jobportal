@@ -1,8 +1,13 @@
 import './globals.css'
+import { Poppins, Work_Sans, Mukta } from 'next/font/google'
+import { AuthProvider } from '../components/AuthProvider'
 import { LanguageProvider } from '../components/LanguageProvider'
 import Navbar from '../components/Navbar'
 import Link from 'next/link'
-import { AuthProvider } from '../components/AuthProvider'
+
+const poppins = Poppins({ subsets: ['latin'], weight: ['600', '700'], variable: '--font-heading' })
+const workSans = Work_Sans({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-body' })
+const mukta = Mukta({ subsets: ['devanagari'], weight: ['500', '600', '700'], variable: '--font-marathi' })
 
 export const metadata = {
   title: 'DwarSing - Latest Government Jobs, Bank Jobs, Railway Jobs 2026',
@@ -16,32 +21,29 @@ export const metadata = {
     type: 'website',
     locale: 'en_IN',
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 }
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${poppins.variable} ${workSans.variable} ${mukta.variable}`}>
       <body>
-  <AuthProvider>
-    <LanguageProvider>
-      <Navbar />
-      <main style={{minHeight:'80vh', background:'#f9fafb'}}>
-        {children}
-      </main>
-      <footer style={{background:'#111827', color:'#9ca3af', textAlign:'center', padding:'24px 20px', fontSize:'13px'}}>
-        <div style={{marginBottom:'10px'}}>
-          <Link href="/privacy-policy" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Privacy Policy</Link>
-          <Link href="/contact" style={{color:'#9ca3af', textDecoration:'none', margin:'0 12px'}}>Contact Us</Link>
-        </div>
-        © 2026 DwarSing. All rights reserved. | Latest Govt & Private Jobs
-      </footer>
-    </LanguageProvider>
-  </AuthProvider>
-     </body>
+        <AuthProvider>
+          <LanguageProvider>
+            <Navbar />
+            <main style={{minHeight:'80vh', background:'var(--color-paper)'}}>
+              {children}
+            </main>
+            <footer style={{background:'var(--color-ink)', color:'#B8BCD9', textAlign:'center', padding:'28px 20px', fontSize:'13px'}}>
+              <div style={{marginBottom:'12px'}}>
+                <Link href="/privacy-policy" style={{color:'#B8BCD9', textDecoration:'none', margin:'0 12px'}}>Privacy Policy</Link>
+                <Link href="/contact" style={{color:'#B8BCD9', textDecoration:'none', margin:'0 12px'}}>Contact Us</Link>
+              </div>
+              © 2026 DwarSing. All rights reserved. | Latest Govt & Private Jobs
+            </footer>
+          </LanguageProvider>
+        </AuthProvider>
+      </body>
     </html>
   )
 }

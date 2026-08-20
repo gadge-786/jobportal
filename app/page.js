@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase'
 import { useLanguage } from '../components/LanguageProvider'
 
 export default function Home() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [jobs, setJobs] = useState([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
@@ -36,15 +36,15 @@ export default function Home() {
   }
 
   const categories = [
-    { name: '🏛️ Govt Jobs', slug: 'government' },
-    { name: '🏦 Banking', slug: 'banking' },
-    { name: '🏛️ DCC Bank', slug: 'dcc-bank' },
-    { name: '🚂 Railway', slug: 'railway' },
-    { name: '💻 IT Jobs', slug: 'it-software' },
-    { name: '🛡️ Defence', slug: 'defence' },
-    { name: '📚 Teaching', slug: 'teaching' },
-    { name: '🏠 WFH Jobs', slug: 'wfh' },
-    { name: '📝 Entrance Exams', slug: 'entrance-exams' },
+    { name: '🏛️ Govt Jobs', slug: 'government', color: '#1a56db' },
+    { name: '🏦 Banking', slug: 'banking', color: '#0891b2' },
+    { name: '🏛️ DCC Bank', slug: 'dcc-bank', color: '#0891b2' },
+    { name: '🚂 Railway', slug: 'railway', color: '#7c3aed' },
+    { name: '💻 IT Jobs', slug: 'it-software', color: '#059669' },
+    { name: '🛡️ Defence', slug: 'defence', color: '#dc2626' },
+    { name: '📚 Teaching', slug: 'teaching', color: '#d97706' },
+    { name: '🏠 WFH Jobs', slug: 'wfh', color: '#6b7280' },
+    { name: '📝 Entrance Exams', slug: 'entrance-exams', color: '#9333ea' },
   ]
 
   async function filterByCategory(cat) {
@@ -59,69 +59,97 @@ export default function Home() {
   }
 
   return (
-    <div style={{maxWidth:'900px', margin:'0 auto', padding:'24px 16px'}}>
-
-      <div style={{textAlign:'center', padding:'40px 20px', background:'linear-gradient(135deg,#1a56db,#0ea5e9)', borderRadius:'16px', marginBottom:'28px', color:'white'}}>
-        <h1 style={{fontSize:'32px', fontWeight:'bold', margin:'0 0 8px'}}>{t('heroTitle')}</h1>
-        <p style={{fontSize:'16px', opacity:0.9, marginBottom:'24px'}}>{t('heroSubtitle')}</p>
-        <div style={{display:'flex', gap:'8px', maxWidth:'500px', margin:'0 auto'}}>
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            onKeyDown={e => e.key==='Enter' && handleSearch()}
-            placeholder={t('searchPlaceholder')}
-            style={{flex:1, padding:'12px 16px', borderRadius:'8px', border:'none', fontSize:'15px'}}
-          />
-          <button onClick={handleSearch} style={{padding:'12px 20px', background:'#f59e0b', color:'white', border:'none', borderRadius:'8px', fontWeight:'bold', cursor:'pointer', fontSize:'15px'}}>
-            {t('search')}
-          </button>
+    <div>
+      <div style={{background:'var(--color-ink)', padding:'56px 20px 64px', position:'relative', overflow:'hidden'}}>
+        <div style={{position:'absolute', top:'-60px', right:'-60px', width:'220px', height:'220px', borderRadius:'50%', background:'rgba(226,166,59,0.12)'}} />
+        <div style={{maxWidth:'760px', margin:'0 auto', position:'relative', textAlign:'center'}}>
+          <span style={{display:'inline-block', background:'rgba(226,166,59,0.15)', color:'var(--color-amber)', fontSize:'12px', fontWeight:'700', letterSpacing:'0.06em', padding:'6px 16px', borderRadius:'20px', marginBottom:'18px'}}>
+            UPDATED DAILY · महाराष्ट्रातील सरकारी नोकऱ्या
+          </span>
+          <h1 style={{fontFamily:'var(--font-heading)', fontSize:'38px', fontWeight:'700', color:'white', margin:'0 0 12px', lineHeight:'1.2'}}>
+            {t('heroTitle')}
+          </h1>
+          <p style={{fontSize:'16px', color:'#C7CBE8', marginBottom:'28px'}}>
+            {t('heroSubtitle')}
+          </p>
+          <div style={{display:'flex', gap:'8px', maxWidth:'520px', margin:'0 auto'}}>
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onKeyDown={e => e.key==='Enter' && handleSearch()}
+              placeholder={t('searchPlaceholder')}
+              style={{flex:1, padding:'14px 18px', borderRadius:'10px', border:'none', fontSize:'15px', fontFamily:'var(--font-body)'}}
+            />
+            <button onClick={handleSearch} style={{padding:'14px 26px', background:'var(--color-amber)', color:'var(--color-ink)', border:'none', borderRadius:'10px', fontWeight:'700', cursor:'pointer', fontSize:'15px'}}>
+              {t('search')}
+            </button>
+          </div>
         </div>
       </div>
 
-      <div style={{display:'flex', gap:'10px', flexWrap:'wrap', marginBottom:'24px', justifyContent:'center'}}>
-        {categories.map(c => (
-          <button key={c.slug} onClick={() => filterByCategory(c.slug)}
-            style={{padding:'8px 18px', borderRadius:'20px', border:'1.5px solid #1a56db', background:'white', color:'#1a56db', cursor:'pointer', fontWeight:'500', fontSize:'13px'}}>
-            {c.name}
+      <hr className="perforated-divider" />
+
+      <div style={{maxWidth:'900px', margin:'0 auto', padding:'32px 16px'}}>
+
+        <div style={{display:'flex', gap:'10px', flexWrap:'wrap', marginBottom:'32px', justifyContent:'center'}}>
+          {categories.map(c => (
+            <button key={c.slug} onClick={() => filterByCategory(c.slug)}
+              style={{
+                padding:'9px 18px', borderRadius:'20px', border:`1.5px solid ${c.color}33`, background:'var(--color-card)',
+                color:c.color, cursor:'pointer', fontWeight:'600', fontSize:'13px', display:'flex', alignItems:'center', gap:'6px'
+              }}>
+              {c.name}
+            </button>
+          ))}
+          <button onClick={fetchJobs}
+            style={{padding:'9px 18px', borderRadius:'20px', border:'1.5px solid var(--color-border)', background:'var(--color-card)', color:'var(--color-muted)', cursor:'pointer', fontSize:'13px', fontWeight:'600'}}>
+            {t('showAll')}
           </button>
-        ))}
-        <button onClick={fetchJobs}
-          style={{padding:'8px 18px', borderRadius:'20px', border:'1.5px solid #6b7280', background:'white', color:'#6b7280', cursor:'pointer', fontSize:'13px'}}>
-          {t('showAll')}
-        </button>
-      </div>
+        </div>
 
-      <h2 style={{fontSize:'20px', fontWeight:'bold', marginBottom:'16px', color:'#111827'}}>
-        {t('latestJobs')}
-      </h2>
+        <h2 style={{fontSize:'20px', fontWeight:'700', marginBottom:'18px', color:'var(--color-ink)', fontFamily:'var(--font-heading)'}}>
+          {t('latestJobs')}
+        </h2>
 
-      {loading ? (
-        <p style={{textAlign:'center', color:'#6b7280', padding:'40px'}}>{t('loading')}</p>
-      ) : jobs.length === 0 ? (
-        <p style={{textAlign:'center', color:'#6b7280', padding:'40px'}}>{t('noJobsFound')}</p>
-      ) : (
-        jobs.map(job => (
-          <div key={job.id} style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'20px', marginBottom:'14px', boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
-            <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:'8px'}}>
-              <div>
-                {job.is_featured && <span style={{background:'#fef3c7', color:'#92400e', fontSize:'11px', padding:'2px 8px', borderRadius:'20px', fontWeight:'500', marginBottom:'6px', display:'inline-block'}}>⭐ Featured</span>}
-                <h3 style={{fontSize:'17px', fontWeight:'bold', color:'#111827', margin:'4px 0'}}>{job.title}</h3>
-                <p style={{color:'#4b5563', fontSize:'14px', margin:'2px 0'}}>🏢 {job.company}</p>
-                <p style={{color:'#6b7280', fontSize:'13px', margin:'2px 0'}}>📍 {job.location}  |  💰 {job.salary}</p>
+        {loading ? (
+          <p style={{textAlign:'center', color:'var(--color-muted)', padding:'40px'}}>{t('loading')}</p>
+        ) : jobs.length === 0 ? (
+          <p style={{textAlign:'center', color:'var(--color-muted)', padding:'40px'}}>{t('noJobsFound')}</p>
+        ) : (
+          jobs.map(job => {
+            const catColor = categories.find(c => c.slug === job.category)?.color || 'var(--color-ink)'
+            return (
+              <div key={job.id} className="card-lift" style={{
+                position:'relative', overflow:'hidden', background:'var(--color-card)',
+                border:'1px solid var(--color-border)', borderLeft:`4px solid ${catColor}`,
+                borderRadius:'14px', padding:'20px', marginBottom:'14px'
+              }}>
+                {job.is_featured && (
+                  <div className="featured-ribbon">FEATURED</div>
+                )}
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:'8px'}}>
+                  <div>
+                    <h3 style={{fontSize:'17px', fontWeight:'700', color:'var(--color-ink)', margin:'0 0 6px', fontFamily:'var(--font-heading)'}}>
+                      {lang === 'mr' && job.title_mr ? job.title_mr : job.title}
+                    </h3>
+                    <p style={{color:'var(--color-muted)', fontSize:'14px', margin:'2px 0'}}>🏢 {job.company}</p>
+                    <p style={{color:'var(--color-muted)', fontSize:'13px', margin:'2px 0'}}>📍 {job.location}  |  💰 {job.salary}</p>
+                  </div>
+                  <span style={{background:`${catColor}15`, color:catColor, fontSize:'12px', padding:'4px 12px', borderRadius:'20px', fontWeight:'600', whiteSpace:'nowrap'}}>
+                    {job.category}
+                  </span>
+                </div>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'16px', flexWrap:'wrap', gap:'8px'}}>
+                  <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>
+                  <Link href={`/jobs/${job.id}`} style={{background:'var(--color-ink)', color:'white', padding:'9px 20px', borderRadius:'8px', textDecoration:'none', fontSize:'13px', fontWeight:'600'}}>
+                    {t('viewDetails')} →
+                  </Link>
+                </div>
               </div>
-              <span style={{background:'#eff6ff', color:'#1d4ed8', fontSize:'12px', padding:'4px 10px', borderRadius:'20px', fontWeight:'500', whiteSpace:'nowrap'}}>
-                {job.category}
-              </span>
-            </div>
-            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'14px', flexWrap:'wrap', gap:'8px'}}>
-              <span style={{fontSize:'12px', color:'#ef4444', fontWeight:'500'}}>⏰ {t('lastDate')}: {job.last_date}</span>
-              <Link href={`/jobs/${job.id}`} style={{background:'#1a56db', color:'white', padding:'8px 18px', borderRadius:'8px', textDecoration:'none', fontSize:'13px', fontWeight:'500'}}>
-                {t('viewDetails')} →
-              </Link>
-            </div>
-          </div>
-        ))
-      )}
+            )
+          })
+        )}
+      </div>
     </div>
   )
 }
