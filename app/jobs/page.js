@@ -4,8 +4,21 @@ import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 import { useLanguage } from '../../components/LanguageProvider'
 
+const categories = [
+  { name: '🏛️ Govt Jobs', slug: 'government', color: '#1a56db' },
+  { name: '🏦 Banking',   slug: 'banking', color: '#0891b2' },
+  { name: '🏛️ DCC Bank', slug: 'dcc-bank', color: '#0891b2' },
+  { name: '🚂 Railway',   slug: 'railway', color: '#7c3aed' },
+  { name: '💻 IT Jobs',   slug: 'it-software', color: '#059669' },
+  { name: '🛡️ Defence',  slug: 'defence', color: '#dc2626' },
+  { name: '📚 Teaching',  slug: 'teaching', color: '#d97706' },
+  { name: '💼 Private',   slug: 'private', color: '#6b7280' },
+  { name: '🏠 WFH Jobs',  slug: 'wfh', color: '#6b7280' },
+  { name: '📝 Entrance Exams', slug: 'entrance-exams', color: '#9333ea' },
+]
+
 export default function AllJobs({ searchParams }) {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const resolvedParams = use(searchParams)
   const categoryFromUrl = resolvedParams?.category || null
 
@@ -47,81 +60,103 @@ export default function AllJobs({ searchParams }) {
     setLoading(false)
   }
 
-  const categories = [
-    { name: '🏛️ Govt Jobs', slug: 'government' },
-    { name: '🏦 Banking',   slug: 'banking' },
-    { name: '🏛️ DCC Bank', slug: 'dcc-bank' },
-    { name: '🚂 Railway',   slug: 'railway' },
-    { name: '💻 IT Jobs',   slug: 'it-software' },
-    { name: '🛡️ Defence',  slug: 'defence' },
-    { name: '📚 Teaching',  slug: 'teaching' },
-    { name: '💼 Private',   slug: 'private' },
-    { name: '🏠 WFH Jobs',  slug: 'wfh' },
-  ]
-
   return (
-    <div style={{maxWidth:'900px', margin:'0 auto', padding:'24px 16px'}}>
-      <h1 style={{fontSize:'26px', fontWeight:'bold', color:'#111827', marginBottom:'6px'}}>{t('allJobs')}</h1>
-
-      <div style={{display:'flex', gap:'8px', marginBottom:'20px'}}>
-        <input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleSearch()}
-          placeholder={t('searchPlaceholder')}
-          style={{flex:1, padding:'10px 14px', borderRadius:'8px', border:'1.5px solid #e5e7eb', fontSize:'14px'}}
-        />
-        <button onClick={handleSearch}
-          style={{padding:'10px 20px', background:'#1a56db', color:'white', border:'none', borderRadius:'8px', cursor:'pointer', fontWeight:'500'}}>
-          {t('search')}
-        </button>
-      </div>
-
-      <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'24px'}}>
-        <button onClick={() => { setActiveCategory(null); fetchJobs(null) }}
-          style={{padding:'7px 16px', borderRadius:'20px', border:'1.5px solid #6b7280', background: activeCategory===null ? '#6b7280' : 'white', color: activeCategory===null ? 'white' : '#374151', cursor:'pointer', fontSize:'13px'}}>
-          {t('allJobs')}
-        </button>
-        {categories.map(c => (
-          <button key={c.slug} onClick={() => { setActiveCategory(c.slug); fetchJobs(c.slug) }}
-            style={{padding:'7px 16px', borderRadius:'20px', border:'1.5px solid #1a56db', background: activeCategory===c.slug ? '#1a56db' : 'white', color: activeCategory===c.slug ? 'white' : '#1a56db', cursor:'pointer', fontSize:'13px', fontWeight:'500'}}>
-            {c.name}
-          </button>
-        ))}
-      </div>
-
-      {!loading && <p style={{fontSize:'13px', color:'#6b7280', marginBottom:'12px'}}>{t('latestJobs')}: {jobs.length}</p>}
-
-      {loading ? (
-        <p style={{textAlign:'center', color:'#6b7280', padding:'60px'}}>{t('loading')}</p>
-      ) : jobs.length === 0 ? (
-        <p style={{textAlign:'center', color:'#6b7280', padding:'60px'}}>{t('noJobsFound')}</p>
-      ) : (
-        jobs.map(job => (
-          <div key={job.id} style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'20px', marginBottom:'12px', boxShadow:'0 1px 4px rgba(0,0,0,0.05)'}}>
-            <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:'8px'}}>
-              <div>
-                {job.is_featured && (
-                  <span style={{background:'#fef3c7', color:'#92400e', fontSize:'11px', padding:'2px 8px', borderRadius:'20px', fontWeight:'500', marginBottom:'6px', display:'inline-block'}}>⭐ Featured</span>
-                )}
-                <h3 style={{fontSize:'16px', fontWeight:'bold', color:'#111827', margin:'4px 0'}}>{job.title}</h3>
-                <p style={{color:'#4b5563', fontSize:'14px', margin:'2px 0'}}>🏢 {job.company}</p>
-                <p style={{color:'#6b7280', fontSize:'13px', margin:'2px 0'}}>📍 {job.location} &nbsp;|&nbsp; 💰 {job.salary}</p>
-              </div>
-              <span style={{background:'#eff6ff', color:'#1d4ed8', fontSize:'12px', padding:'4px 10px', borderRadius:'20px', fontWeight:'500', whiteSpace:'nowrap'}}>
-                {job.category}
-              </span>
-            </div>
-            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'14px', flexWrap:'wrap', gap:'8px'}}>
-              <span style={{fontSize:'12px', color:'#ef4444', fontWeight:'500'}}>⏰ {t('lastDate')}: {job.last_date}</span>
-              <Link href={`/jobs/${job.id}`}
-                style={{background:'#1a56db', color:'white', padding:'8px 18px', borderRadius:'8px', textDecoration:'none', fontSize:'13px', fontWeight:'500'}}>
-                {t('viewDetails')} →
-              </Link>
-            </div>
+    <div>
+      <div style={{background:'var(--color-ink)', padding:'40px 20px 48px'}}>
+        <div style={{maxWidth:'900px', margin:'0 auto'}}>
+          <h1 style={{fontFamily:'var(--font-heading)', fontSize:'26px', fontWeight:'700', color:'white', margin:'0 0 6px'}}>
+            {t('allJobs')}
+          </h1>
+          <p style={{color:'#C7CBE8', fontSize:'14px', marginBottom:'20px'}}>
+            {t('heroSubtitle')}
+          </p>
+          <div style={{display:'flex', gap:'8px'}}>
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSearch()}
+              placeholder={t('searchPlaceholder')}
+              style={{flex:1, padding:'12px 16px', borderRadius:'10px', border:'none', fontSize:'14px', fontFamily:'var(--font-body)'}}
+            />
+            <button onClick={handleSearch}
+              style={{padding:'12px 24px', background:'var(--color-amber)', color:'var(--color-ink)', border:'none', borderRadius:'10px', cursor:'pointer', fontWeight:'700', fontSize:'14px'}}>
+              {t('search')}
+            </button>
           </div>
-        ))
-      )}
+        </div>
+      </div>
+
+      <hr className="perforated-divider" />
+
+      <div style={{maxWidth:'900px', margin:'0 auto', padding:'28px 16px'}}>
+
+        <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'24px'}}>
+          <button onClick={() => { setActiveCategory(null); fetchJobs(null) }}
+            style={{
+              padding:'8px 16px', borderRadius:'20px', border: activeCategory===null ? '1.5px solid var(--color-ink)' : '1.5px solid var(--color-border)',
+              background: activeCategory===null ? 'var(--color-ink)' : 'var(--color-card)',
+              color: activeCategory===null ? 'white' : 'var(--color-muted)',
+              cursor:'pointer', fontSize:'13px', fontWeight:'600'
+            }}>
+            {t('allJobs')}
+          </button>
+          {categories.map(c => (
+            <button key={c.slug} onClick={() => { setActiveCategory(c.slug); fetchJobs(c.slug) }}
+              style={{
+                padding:'8px 16px', borderRadius:'20px', border: `1.5px solid ${activeCategory===c.slug ? c.color : c.color+'33'}`,
+                background: activeCategory===c.slug ? c.color : 'var(--color-card)',
+                color: activeCategory===c.slug ? 'white' : c.color,
+                cursor:'pointer', fontSize:'13px', fontWeight:'600'
+              }}>
+              {c.name}
+            </button>
+          ))}
+        </div>
+
+        {!loading && (
+          <p style={{fontSize:'13px', color:'var(--color-muted)', marginBottom:'14px'}}>
+            {jobs.length} {lang === 'mr' ? 'नोकऱ्या सापडल्या' : 'jobs found'}
+          </p>
+        )}
+
+        {loading ? (
+          <p style={{textAlign:'center', color:'var(--color-muted)', padding:'60px'}}>{t('loading')}</p>
+        ) : jobs.length === 0 ? (
+          <p style={{textAlign:'center', color:'var(--color-muted)', padding:'60px'}}>{t('noJobsFound')}</p>
+        ) : (
+          jobs.map(job => {
+            const catColor = categories.find(c => c.slug === job.category)?.color || 'var(--color-ink)'
+            return (
+              <div key={job.id} className="card-lift" style={{
+                position:'relative', overflow:'hidden', background:'var(--color-card)',
+                border:'1px solid var(--color-border)', borderLeft:`4px solid ${catColor}`,
+                borderRadius:'14px', padding:'20px', marginBottom:'12px'
+              }}>
+                {job.is_featured && <div className="featured-ribbon">FEATURED</div>}
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:'8px'}}>
+                  <div>
+                    <h3 style={{fontSize:'16px', fontWeight:'700', color:'var(--color-ink)', margin:'0 0 6px', fontFamily:'var(--font-heading)'}}>
+                      {lang === 'mr' && job.title_mr ? job.title_mr : job.title}
+                    </h3>
+                    <p style={{color:'var(--color-muted)', fontSize:'14px', margin:'2px 0'}}>🏢 {job.company}</p>
+                    <p style={{color:'var(--color-muted)', fontSize:'13px', margin:'2px 0'}}>📍 {job.location} &nbsp;|&nbsp; 💰 {job.salary}</p>
+                  </div>
+                  <span style={{background:`${catColor}15`, color:catColor, fontSize:'12px', padding:'4px 12px', borderRadius:'20px', fontWeight:'600', whiteSpace:'nowrap'}}>
+                    {job.category}
+                  </span>
+                </div>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'16px', flexWrap:'wrap', gap:'8px'}}>
+                  <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>
+                  <Link href={`/jobs/${job.id}`}
+                    style={{background:'var(--color-ink)', color:'white', padding:'9px 20px', borderRadius:'8px', textDecoration:'none', fontSize:'13px', fontWeight:'600'}}>
+                    {t('viewDetails')} →
+                  </Link>
+                </div>
+              </div>
+            )
+          })
+        )}
+      </div>
     </div>
   )
 }
