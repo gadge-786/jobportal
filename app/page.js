@@ -64,7 +64,7 @@ export default function Home() {
         <div style={{position:'absolute', top:'-60px', right:'-60px', width:'220px', height:'220px', borderRadius:'50%', background:'rgba(226,166,59,0.12)'}} />
         <div style={{maxWidth:'760px', margin:'0 auto', position:'relative', textAlign:'center'}}>
           <span style={{display:'inline-block', background:'rgba(226,166,59,0.15)', color:'var(--color-amber)', fontSize:'12px', fontWeight:'700', letterSpacing:'0.06em', padding:'6px 16px', borderRadius:'20px', marginBottom:'18px'}}>
-            UPDATED DAILY · महाराष्ट्रातील सरकारी नोकऱ्या
+            UPDATED DAILY · देशभरातल्या सरकारी नोकऱ्या
           </span>
           <h1 style={{fontFamily:'var(--font-heading)', fontSize:'38px', fontWeight:'700', color:'white', margin:'0 0 12px', lineHeight:'1.2'}}>
             {t('heroTitle')}
