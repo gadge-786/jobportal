@@ -63,12 +63,12 @@ setExamTests(examData && examData.length > 0 ? examData : null)
 
   return (
     <div style={{maxWidth:'860px', margin:'0 auto', padding:'24px 16px'}}>
-      <Link href="/" style={{color:'#1a56db', fontSize:'14px', textDecoration:'none'}}>
-        ← {t('backToJobs')}
-      </Link>
+      <Link href="/" style={{color:'var(--color-ink)', fontSize:'13px', fontWeight:'600', textDecoration:'none'}}>
+      ← {t('backToJobs')}
+    </Link>
 
       {examTests && examTests.length > 0 && (
-  <div style={{background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}cc)`, borderRadius:'16px', padding:'24px', marginBottom:'16px', color:'white', textAlign:'center'}}>
+     <div style={{background: 'linear-gradient(135deg, var(--color-amber), var(--color-amber-dark))', borderRadius:'16px', padding:'24px', marginBottom:'16px', color:'var(--color-ink)', textAlign:'center'}}>
     <h2 style={{fontSize:'18px', fontWeight:'bold', margin:'0 0 16px'}}>📝 Practice Mock Tests Available</h2>
     <div style={{display:'flex', flexDirection:'column', gap:'10px', alignItems:'center'}}>
       {examTests.map((exam) => (
@@ -84,9 +84,12 @@ setExamTests(examData && examData.length > 0 ? examData : null)
   </div>
 )}
 
-      <div style={{background:categoryColor, borderRadius:'16px', padding:'28px', marginTop:'16px', color:'white'}}>
-        <h1 style={{fontSize:'24px', fontWeight:'bold', margin:'8px 0 6px'}}>{job.title}</h1>
-        <p style={{fontSize:'16px', opacity:0.9, margin:'0'}}>{t('company')}:{job.company}</p>
+      <div style={{background:`linear-gradient(135deg, ${categoryColor}, ${categoryColor}dd)`, borderRadius:'16px', padding:'28px', marginTop:'14px', color:'white', position:'relative', overflow:'hidden'}}>
+      <div style={{position:'absolute', top:'-30px', right:'-30px', width:'140px', height:'140px', borderRadius:'50%', background:'rgba(255,255,255,0.08)'}} />
+      <h1 style={{fontFamily:'var(--font-heading)', fontSize:'23px', fontWeight:'700', margin:'0 0 8px', position:'relative'}}>
+        {lang === 'mr' && job.title_mr ? job.title_mr : job.title}
+      </h1>
+      <p style={{fontSize:'15px', opacity:0.92, margin:'0', position:'relative'}}>{t('company')}: {job.company}</p>
       </div>
 
       <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'12px', margin:'16px 0'}}>
@@ -103,14 +106,19 @@ setExamTests(examData && examData.length > 0 ? examData : null)
         ))}
       </div>
 
-       <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
-        <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'14px'}}>{t('aboutJob')}</h2>
-        <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'15px'}}>{job.description}</p>
-      </div>
+  <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'14px', padding:'22px', marginBottom:'16px'}}>
+  <h2 style={{fontFamily:'var(--font-heading)', fontSize:'16px', fontWeight:'700', color:'var(--color-ink)', marginBottom:'12px'}}>{t('aboutJob')}</h2>
+  <p style={{color:'var(--color-muted)', lineHeight:'1.8', fontSize:'14.5px'}}>{job.description}</p>
+  {lang === 'mr' && job.description_mr && (
+    <p style={{color:'var(--color-muted)', lineHeight:'1.8', fontSize:'14px', marginTop:'10px', fontFamily:'var(--font-marathi)', borderTop:'1px dashed var(--color-border)', paddingTop:'10px'}}>
+      {job.description_mr}
+    </p>
+  )}
+  </div>
 
       {job.timeline && Array.isArray(job.timeline) && job.timeline.length > 0 && (
-        <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', marginBottom:'16px'}}>
-          <h2 style={{fontSize:'18px', fontWeight:'bold', color:'#111827', marginBottom:'20px'}}>{t('applicationTracker')}</h2>
+        <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'14px', padding:'22px', marginBottom:'16px'}}>
+        <h2 style={{fontFamily:'var(--font-heading)', fontSize:'16px', fontWeight:'700', color:'var(--color-ink)', marginBottom:'18px'}}>{t('applicationTracker')}</h2>
           <div style={{position:'relative', paddingLeft:'8px'}}>
             {job.timeline.map((stage, idx) => {
               const isCompleted = stage.status === 'completed'
@@ -197,10 +205,10 @@ setExamTests(examData && examData.length > 0 ? examData : null)
         </div>
       )}
 
-      <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'24px', textAlign:'center', marginBottom:'16px'}}>
-        <p style={{color:'#6b7280', fontSize:'14px', marginBottom:'16px'}}>
-          {t('applyWarning')}
-        </p>
+      <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'14px', padding:'26px', textAlign:'center', marginBottom:'16px'}}>
+  <p style={{color:'var(--color-muted)', fontSize:'13px', marginBottom:'18px'}}>
+    {t('applyWarning')}
+  </p>
         <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>
           <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
             {t('applyNow')}

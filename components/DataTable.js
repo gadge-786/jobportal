@@ -1,21 +1,20 @@
 export default function DataTable({ title, columns, rows, accentColor, subtitle }) {
   return (
     <div style={{
-      background: 'white',
-      borderRadius: '16px',
-      marginBottom: '20px',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
-      border: '1px solid #eef0f3',
+      background: 'var(--color-card)',
+      borderRadius: '14px',
+      marginBottom: '16px',
+      border: '1px solid var(--color-border)',
       overflow: 'hidden'
     }}>
       <div style={{
-        padding: '20px 24px 16px',
+        padding: '18px 22px 14px',
         borderLeft: `4px solid ${accentColor}`,
         background: `linear-gradient(135deg, ${accentColor}0d, transparent)`
       }}>
-        <h2 style={{ fontSize: '17px', fontWeight: '700', color: '#111827', margin: 0 }}>{title}</h2>
+        <h2 style={{ fontFamily:'var(--font-heading)', fontSize: '16px', fontWeight: '700', color: 'var(--color-ink)', margin: 0 }}>{title}</h2>
         {subtitle && (
-          <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px', marginBottom: 0 }}>{subtitle}</p>
+          <p style={{ fontSize: '12px', color: 'var(--color-muted)', marginTop: '4px', marginBottom: 0 }}>{subtitle}</p>
         )}
       </div>
 
@@ -26,7 +25,7 @@ export default function DataTable({ title, columns, rows, accentColor, subtitle 
               {columns.map((col, i) => (
                 <th key={i} style={{
                   textAlign: 'left',
-                  padding: '10px 24px',
+                  padding: '10px 22px',
                   color: accentColor,
                   fontWeight: '700',
                   fontSize: '11px',
@@ -47,15 +46,14 @@ export default function DataTable({ title, columns, rows, accentColor, subtitle 
                 <tr
                   key={i}
                   style={{
-                    background: isTotal ? `${accentColor}0f` : (i % 2 === 0 ? 'white' : '#fafbfc'),
-                    borderBottom: '1px solid #f1f2f4',
-                    transition: 'background 0.15s'
+                    background: isTotal ? `${accentColor}0f` : (i % 2 === 0 ? 'var(--color-card)' : '#FAF8F3'),
+                    borderBottom: '1px solid var(--color-border)'
                   }}
                 >
                   {row.map((cell, j) => (
                     <td key={j} style={{
-                      padding: '11px 24px',
-                      color: j === 0 ? '#111827' : '#4b5563',
+                      padding: '11px 22px',
+                      color: j === 0 ? 'var(--color-ink)' : 'var(--color-muted)',
                       fontWeight: (j === 0 || isTotal) ? '600' : '400',
                       whiteSpace: 'nowrap'
                     }}>
