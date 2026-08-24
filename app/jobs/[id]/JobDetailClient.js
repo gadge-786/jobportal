@@ -9,7 +9,7 @@ import JobQA from '../../../components/JobQA'
 export default function JobDetailClient({ id }) {
   const [job, setJob] = useState(null)
   const [loading, setLoading] = useState(true)
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [examTests, setExamTests] = useState([])
   
 
