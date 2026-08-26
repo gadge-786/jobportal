@@ -96,8 +96,8 @@ export default function ExamPage({ params }) {
   }
 
   if (stage === 'loading') {
-    return <div style={{textAlign:'center', padding:'80px', color:'#6b7280'}}>Loading exam...</div>
-  }
+  return <div style={{textAlign:'center', padding:'80px', color:'var(--color-muted)'}}>Loading exam...</div>
+}
 
   if (stage === 'error') {
     return (
@@ -109,14 +109,15 @@ export default function ExamPage({ params }) {
   }
 
   if (stage === 'instructions') {
-    return (
-      <div style={{maxWidth:'600px', margin:'0 auto', padding:'40px 20px'}}>
-        <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'32px'}}>
-          <h1 style={{fontSize:'22px', fontWeight:'bold', color:'#111827', marginBottom:'8px'}}>{examData.exam.title}</h1>
-          {examData.exam.instructions && (
-            <p style={{color:'#6b7280', fontSize:'14px', marginBottom:'20px'}}>{examData.exam.instructions}</p>
-          )}
-          <div style={{background:'#f9fafb', borderRadius:'10px', padding:'16px', marginBottom:'20px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
+  return (
+    <div style={{maxWidth:'600px', margin:'0 auto', padding:'40px 20px'}}>
+      <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'18px', padding:'32px'}}>
+        <span style={{display:'inline-block', background:'#fdf6ea', color:'var(--color-amber-dark)', fontSize:'11px', fontWeight:'700', letterSpacing:'0.05em', padding:'4px 12px', borderRadius:'20px', marginBottom:'12px'}}>MOCK TEST</span>
+        <h1 style={{fontFamily:'var(--font-heading)', fontSize:'21px', fontWeight:'700', color:'var(--color-ink)', marginBottom:'8px'}}>{examData.exam.title}</h1>
+        {examData.exam.instructions && (
+        <p style={{color:'var(--color-muted)', fontSize:'14px', marginBottom:'20px'}}>{examData.exam.instructions}</p>
+        )}
+        <div style={{background:'var(--color-paper)', borderRadius:'12px', padding:'16px', marginBottom:'20px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
             <div>
               <div style={{fontSize:'11px', color:'#6b7280'}}>Duration</div>
               <div style={{fontSize:'15px', fontWeight:'600', color:'#111827'}}>{examData.exam.duration_minutes} minutes</div>
@@ -166,17 +167,17 @@ export default function ExamPage({ params }) {
             </div>
           )}
 
-          <button
-            onClick={startTest}
-            style={{width:'100%', padding:'14px', background:'#1a56db', color:'white', border:'none', borderRadius:'10px', fontWeight:'bold', fontSize:'16px', cursor:'pointer', marginBottom:'12px'}}
-          >
-            Start Test
-          </button>
+        <button
+        onClick={startTest}
+        style={{width:'100%', padding:'14px', background:'var(--color-amber)', color:'var(--color-ink)', border:'none', borderRadius:'10px', fontWeight:'700', fontSize:'16px', cursor:'pointer', marginBottom:'12px'}}
+        >
+        Start Test
+        </button>
 
-          <button
-            onClick={() => setShowLeaderboardPreview(prev => !prev)}
-            style={{width:'100%', padding:'10px', background:'white', color:'#1a56db', border:'1px solid #1a56db', borderRadius:'10px', fontWeight:'600', fontSize:'13px', cursor:'pointer'}}
-          >
+        <button
+        onClick={() => setShowLeaderboardPreview(prev => !prev)}
+        style={{width:'100%', padding:'10px', background:'white', color:'var(--color-ink)', border:'1px solid var(--color-ink)', borderRadius:'10px', fontWeight:'600', fontSize:'13px', cursor:'pointer'}}
+        >
             {showLeaderboardPreview ? 'Hide Leaderboard' : '🏆 View Leaderboard'}
           </button>
 
@@ -196,12 +197,12 @@ export default function ExamPage({ params }) {
 
     return (
       <div style={{maxWidth:'700px', margin:'0 auto', padding:'20px 16px'}}>
-        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', background:'white', borderRadius:'12px', padding:'14px 20px', marginBottom:'16px', border:'1px solid #e5e7eb', position:'sticky', top:'10px', zIndex:10}}>
-          <span style={{fontSize:'13px', color:'#6b7280'}}>Question {currentIndex + 1} of {examData.questions.length}</span>
-          <span style={{fontSize:'16px', fontWeight:'bold', color: timeLeft < 60 ? '#ef4444' : '#111827'}}>⏱ {formatTime(timeLeft)}</span>
-        </div>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', background:'var(--color-ink)', borderRadius:'12px', padding:'14px 20px', marginBottom:'16px', position:'sticky', top:'10px', zIndex:10}}>
+  <span style={{fontSize:'13px', color:'#C7CBE8'}}>Question {currentIndex + 1} of {examData.questions.length}</span>
+  <span style={{fontSize:'16px', fontWeight:'bold', color: timeLeft < 60 ? '#ff8a80' : 'var(--color-amber)'}}>⏱ {formatTime(timeLeft)}</span>
+</div>
 
-        <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'24px', marginBottom:'16px'}}>
+        <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'16px', padding:'24px', marginBottom:'16px'}}>
           <p style={{fontSize:'15px', fontWeight:'600', color:'#111827', marginBottom: question.question_text_mr ? '4px' : '20px', lineHeight:'1.6'}}>
             {question.question_text}
           </p>
@@ -220,15 +221,15 @@ export default function ExamPage({ params }) {
                 onClick={() => selectAnswer(question.id, opt)}
                 style={{
                   display:'flex', alignItems:'flex-start', gap:'12px', padding:'12px 16px', borderRadius:'10px', marginBottom:'10px', cursor:'pointer',
-                  border: isSelected ? '2px solid #1a56db' : '1px solid #e5e7eb',
-                  background: isSelected ? '#eff6ff' : 'white'
+                  border: isSelected ? '2px solid var(--color-ink)' : '1px solid var(--color-border)',
+                  background: isSelected ? '#f0f1f8' : 'white'
                 }}
               >
                 <div style={{
                   width:'24px', height:'24px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center',
                   fontSize:'12px', fontWeight:'bold', flexShrink:0, marginTop:'1px',
-                  background: isSelected ? '#1a56db' : '#f3f4f6',
-                  color: isSelected ? 'white' : '#6b7280'
+                  background: isSelected ? 'var(--color-ink)' : '#f3f4f6',
+                  color: isSelected ? 'white' : 'var(--color-muted)'
                 }}>
                   {opt}
                 </div>
@@ -245,28 +246,28 @@ export default function ExamPage({ params }) {
 
         <div style={{display:'flex', gap:'10px', marginBottom:'16px'}}>
           <button
-            onClick={() => setCurrentIndex(i => Math.max(0, i - 1))}
-            disabled={currentIndex === 0}
-            style={{flex:1, padding:'12px', borderRadius:'10px', border:'1px solid #e5e7eb', background:'white', color:'#374151', fontWeight:'500', cursor: currentIndex === 0 ? 'not-allowed' : 'pointer', opacity: currentIndex === 0 ? 0.5 : 1}}
-          >
-            ← Previous
-          </button>
-          {currentIndex < examData.questions.length - 1 ? (
-            <button
-              onClick={() => setCurrentIndex(i => Math.min(examData.questions.length - 1, i + 1))}
-              style={{flex:1, padding:'12px', borderRadius:'10px', border:'none', background:'#1a56db', color:'white', fontWeight:'500', cursor:'pointer'}}
-            >
-              Next →
-            </button>
-          ) : (
-            <button
-              onClick={() => submitExam()}
-              disabled={submitting}
-              style={{flex:1, padding:'12px', borderRadius:'10px', border:'none', background:'#16a34a', color:'white', fontWeight:'500', cursor:'pointer'}}
-            >
-              {submitting ? 'Submitting...' : 'Submit Test'}
-            </button>
-          )}
+  onClick={() => setCurrentIndex(i => Math.max(0, i - 1))}
+  disabled={currentIndex === 0}
+  style={{flex:1, padding:'12px', borderRadius:'10px', border:'1px solid var(--color-border)', background:'white', color:'var(--color-ink)', fontWeight:'600', cursor: currentIndex === 0 ? 'not-allowed' : 'pointer', opacity: currentIndex === 0 ? 0.5 : 1}}
+>
+  ← Previous
+</button>
+{currentIndex < examData.questions.length - 1 ? (
+  <button
+    onClick={() => setCurrentIndex(i => Math.min(examData.questions.length - 1, i + 1))}
+    style={{flex:1, padding:'12px', borderRadius:'10px', border:'none', background:'var(--color-ink)', color:'white', fontWeight:'600', cursor:'pointer'}}
+  >
+    Next →
+  </button>
+) : (
+  <button
+    onClick={() => submitExam()}
+    disabled={submitting}
+    style={{flex:1, padding:'12px', borderRadius:'10px', border:'none', background:'var(--color-success)', color:'white', fontWeight:'600', cursor:'pointer'}}
+  >
+    {submitting ? 'Submitting...' : 'Submit Test'}
+  </button>
+)}
         </div>
 
         <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
@@ -275,9 +276,9 @@ export default function ExamPage({ params }) {
               key={q.id}
               onClick={() => setCurrentIndex(idx)}
               style={{
-                width:'32px', height:'32px', borderRadius:'8px', border: idx === currentIndex ? '2px solid #1a56db' : '1px solid #e5e7eb',
-                background: answers[q.id] ? '#dcfce7' : 'white',
-                color: '#374151', fontSize:'12px', fontWeight:'500', cursor:'pointer'
+              width:'32px', height:'32px', borderRadius:'8px', border: idx === currentIndex ? '2px solid var(--color-ink)' : '1px solid var(--color-border)',
+              background: answers[q.id] ? '#dcfce7' : 'white',
+              color: 'var(--color-ink)', fontSize:'12px', fontWeight:'600', cursor:'pointer'
               }}
             >
               {idx + 1}
@@ -292,9 +293,9 @@ export default function ExamPage({ params }) {
   if (stage === 'result') {
     return (
       <div style={{maxWidth:'700px', margin:'0 auto', padding:'40px 16px'}}>
-        <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'32px', textAlign:'center', marginBottom:'20px'}}>
-          <h1 style={{fontSize:'20px', fontWeight:'bold', color:'#111827', marginBottom:'6px'}}>Test Completed</h1>
-          <div style={{fontSize:'48px', fontWeight:'bold', color:'#1a56db', margin:'20px 0'}}>{result.score.toFixed(2)}</div>
+        <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'18px', padding:'32px', textAlign:'center', marginBottom:'20px'}}>
+         <h1 style={{fontFamily:'var(--font-heading)', fontSize:'19px', fontWeight:'700', color:'var(--color-ink)', marginBottom:'6px'}}>Test Completed</h1>
+         <div style={{fontFamily:'var(--font-heading)', fontSize:'48px', fontWeight:'700', color:'var(--color-amber-dark)', margin:'20px 0'}}>{result.score.toFixed(2)}</div>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'10px', marginBottom:'24px'}}>
             <div style={{background:'#dcfce7', borderRadius:'10px', padding:'12px'}}>
               <div style={{fontSize:'20px', fontWeight:'bold', color:'#166534'}}>{result.correctCount}</div>
@@ -311,23 +312,23 @@ export default function ExamPage({ params }) {
           </div>
           <div style={{display:'flex', gap:'10px'}}>
             <button
-              onClick={() => window.location.reload()}
-              style={{flex:1, padding:'12px', borderRadius:'10px', border:'none', background:'#1a56db', color:'white', fontWeight:'600', cursor:'pointer'}}
+            onClick={() => window.location.reload()}
+            style={{flex:1, padding:'12px', borderRadius:'10px', border:'none', background:'var(--color-ink)', color:'white', fontWeight:'600', cursor:'pointer'}}
             >
-              Retake Test
-            </button>
-            <Link href="/" style={{flex:1, padding:'12px', borderRadius:'10px', border:'1px solid #e5e7eb', background:'white', color:'#374151', fontWeight:'600', textDecoration:'none', textAlign:'center'}}>
-              Back to Home
-            </Link>
+           Retake Test
+          </button>
+          <Link href="/" style={{flex:1, padding:'12px', borderRadius:'10px', border:'1px solid var(--color-border)', background:'white', color:'var(--color-ink)', fontWeight:'600', textDecoration:'none', textAlign:'center'}}>
+          Back to Home
+          </Link>
           </div>
         </div>
 
-        <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'24px', marginBottom:'20px'}}>
-          <h2 style={{fontSize:'17px', fontWeight:'bold', color:'#111827', marginBottom:'16px'}}>🏆 Leaderboard</h2>
+        <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'18px', padding:'24px', marginBottom:'20px'}}>
+        <h2 style={{fontFamily:'var(--font-heading)', fontSize:'16px', fontWeight:'700', color:'var(--color-ink)', marginBottom:'16px'}}>🏆 Leaderboard</h2>
           <Leaderboard examId={examId} highlightAttemptId={attemptId} currentScore={result.score} currentTime={null} />
         </div>
 
-        <div style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'24px'}}>
+         <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'18px', padding:'24px'}}>
           <button
             onClick={() => setShowReview(prev => !prev)}
             style={{width:'100%', padding:'12px', background:'#f9fafb', border:'1px solid #e5e7eb', borderRadius:'10px', fontWeight:'600', fontSize:'14px', color:'#111827', cursor:'pointer'}}

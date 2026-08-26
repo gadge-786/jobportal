@@ -36,8 +36,8 @@ export default function Leaderboard({ examId, highlightAttemptId, currentScore, 
     fetchLeaderboard()
   }, [examId, highlightAttemptId, currentScore, currentTime])
 
-  if (loading) return <p style={{textAlign:'center', color:'#9ca3af', fontSize:'13px', padding:'20px 0'}}>Loading leaderboard...</p>
-  if (attempts.length === 0) return <p style={{textAlign:'center', color:'#9ca3af', fontSize:'13px', padding:'20px 0'}}>No leaderboard entries yet. Sign in to be the first!</p>
+  if (loading) return <p style={{textAlign:'center', color:'var(--color-muted)', fontSize:'13px', padding:'20px 0'}}>Loading leaderboard...</p>
+  if (attempts.length === 0) return <p style={{textAlign:'center', color:'var(--color-muted)', fontSize:'13px', padding:'20px 0'}}>No leaderboard entries yet. Sign in to be the first!</p>
 
   const medals = ['🥇', '🥈', '🥉']
 
@@ -49,26 +49,26 @@ export default function Leaderboard({ examId, highlightAttemptId, currentScore, 
           return (
             <div key={a.id} style={{
               display:'flex', alignItems:'center', gap:'12px', padding:'10px 12px', borderRadius:'10px',
-              background: isMe ? '#eff6ff' : (idx < 3 ? '#fffbeb' : '#f9fafb'),
-              border: isMe ? '2px solid #1a56db' : '2px solid transparent'
+              background: isMe ? '#eff6ff' : (idx < 3 ? '#fdf6ea' : 'var(--color-paper)'),
+              border: isMe ? '2px solid var(--color-ink)' : '2px solid transparent'
             }}>
-              <span style={{width:'28px', textAlign:'center', fontSize:'14px', fontWeight:'bold', color:'#6b7280'}}>
+              <span style={{width:'28px', textAlign:'center', fontSize:'14px', fontWeight:'bold', color:'var(--color-muted)'}}>
                 {medals[idx] || idx + 1}
               </span>
               {a.user_photo && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={a.user_photo} alt="" style={{width:'28px', height:'28px', borderRadius:'50%'}} />
               )}
-              <span style={{flex:1, fontSize:'13px', fontWeight:isMe ? '700' : '500', color:'#111827'}}>
+              <span style={{flex:1, fontSize:'13px', fontWeight:isMe ? '700' : '500', color:'var(--color-ink)'}}>
                 {a.candidate_name}{isMe ? ' (You)' : ''}
               </span>
-              <span style={{fontSize:'13px', fontWeight:'bold', color:'#1a56db'}}>{Number(a.score).toFixed(2)}</span>
+              <span style={{fontSize:'13px', fontWeight:'bold', color:'var(--color-amber-dark)'}}>{Number(a.score).toFixed(2)}</span>
             </div>
           )
         })}
       </div>
       {myRank && (
-        <div style={{marginTop:'12px', padding:'10px 14px', background:'#eff6ff', border:'2px solid #1a56db', borderRadius:'10px', fontSize:'13px', color:'#1e40af', fontWeight:'600', textAlign:'center'}}>
+        <div style={{marginTop:'12px', padding:'10px 14px', background:'var(--color-ink)', border:'none', borderRadius:'10px', fontSize:'13px', color:'var(--color-amber)', fontWeight:'700', textAlign:'center'}}>
           Your Rank: #{myRank}
         </div>
       )}
