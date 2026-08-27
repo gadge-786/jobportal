@@ -35,5 +35,45 @@ export async function generateMetadata({ params }) {
 
 export default async function JobDetailPage({ params }) {
   const { id } = await params
-  return <JobDetailClient id={id} />
+  const { data: job } = await supabase
+    .from('jobs')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  const jsonLd = job ? {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: job.title,
+    description: job.description || job.title,
+    datePosted: job.created_at,
+    validThrough: job.last_date && job.last_date !== 'Check official notification' ? job.last_date : undefined,
+    employmentType: job.job_type === 'private' ? 'FULL_TIME' : 'OTHER',
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: job.company,
+      sameAs: job.apply_link,
+    },
+    jobLocation: {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: job.location,
+        addressRegion: 'Maharashtra',
+        addressCountry: 'IN',
+      },
+    },
+  } : null
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <JobDetailClient id={id} />
+    </>
+  )
 }

@@ -63,7 +63,14 @@ setExamTests(examData && examData.length > 0 ? examData : null)
       <Link href="/" style={{color:'var(--color-ink)', fontSize:'13px', fontWeight:'600', textDecoration:'none'}}>
       ← {t('backToJobs')}
     </Link>
-
+    {job.is_active === false && (
+    <div style={{background:'#fef2f2', border:'1px solid #fecaca', borderRadius:'12px', padding:'14px 18px', marginBottom:'14px', display:'flex', alignItems:'center', gap:'10px'}}>
+    <span style={{fontSize:'18px'}}>⏰</span>
+    <p style={{fontSize:'13px', color:'#991b1b', fontWeight:'600', margin:0}}>
+    This application deadline has passed. This page is kept for reference.
+    </p>
+    </div>
+    )}
       {examTests && examTests.length > 0 && (
      <div style={{background: 'linear-gradient(135deg, var(--color-amber), var(--color-amber-dark))', borderRadius:'16px', padding:'24px', marginBottom:'16px', color:'var(--color-ink)', textAlign:'center'}}>
     <h2 style={{fontSize:'18px', fontWeight:'bold', margin:'0 0 16px'}}>📝 Practice Mock Tests Available</h2>
