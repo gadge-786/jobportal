@@ -3,7 +3,7 @@ import { useEffect, useState, use } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 import { useLanguage } from '../../components/LanguageProvider'
-import ChakraLoader from '../components/ChakraLoader'
+import ChakraLoader from '../../components/ChakraLoader'
 
 const categories = [
   { name: '🏛️ Govt Jobs', slug: 'government', color: '#1a56db' },

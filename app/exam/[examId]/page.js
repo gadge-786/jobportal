@@ -3,7 +3,7 @@ import { useEffect, useState, use, useCallback } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../components/AuthProvider'
 import Leaderboard from '../../../components/LeaderBoard'
-import ChakraLoader from '../components/ChakraLoader'
+import ChakraLoader from '../../../components/ChakraLoader'
 
 export default function ExamPage({ params }) {
   const { examId } = use(params)
