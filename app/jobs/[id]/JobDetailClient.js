@@ -5,6 +5,7 @@ import { supabase } from '../../../lib/supabase'
 import DataTable from '../../../components/DataTable'
 import { useLanguage } from '../../../components/LanguageProvider'
 import JobQA from '../../../components/JobQA'
+import ChakraLoader from '../../../components/ChakraLoader'
 
 export default function JobDetailClient({ id }) {
   const [job, setJob] = useState(null)
@@ -36,11 +37,7 @@ setExamTests(examData && examData.length > 0 ? examData : null)
     fetchJob()
   }, [id])
 
-  if (loading) return (
-    <div style={{textAlign:'center', padding:'80px', color:'#6b7280'}}>
-      <p>{t('loading')}</p>
-    </div>
-  )
+  if (loading) return <ChakraLoader label={t('loading')} />
 
   if (!job) return (
     <div style={{textAlign:'center', padding:'80px', color:'#6b7280'}}>

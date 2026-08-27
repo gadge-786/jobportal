@@ -3,6 +3,7 @@ import { useEffect, useState, use, useCallback } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../components/AuthProvider'
 import Leaderboard from '../../../components/LeaderBoard'
+import ChakraLoader from '../components/ChakraLoader'
 
 export default function ExamPage({ params }) {
   const { examId } = use(params)
@@ -95,8 +96,8 @@ export default function ExamPage({ params }) {
     return `${m}:${s.toString().padStart(2, '0')}`
   }
 
-  if (stage === 'loading') {
-  return <div style={{textAlign:'center', padding:'80px', color:'var(--color-muted)'}}>Loading exam...</div>
+ if (stage === 'loading') {
+  return <ChakraLoader label="Loading exam..." />
 }
 
   if (stage === 'error') {

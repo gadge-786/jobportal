@@ -3,6 +3,7 @@ import { useEffect, useState, use } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 import { useLanguage } from '../../components/LanguageProvider'
+import ChakraLoader from '../components/ChakraLoader'
 
 const categories = [
   { name: '🏛️ Govt Jobs', slug: 'government', color: '#1a56db' },
@@ -120,7 +121,7 @@ export default function AllJobs({ searchParams }) {
         )}
 
         {loading ? (
-          <p style={{textAlign:'center', color:'var(--color-muted)', padding:'60px'}}>{t('loading')}</p>
+          <ChakraLoader label={t('loading')} />
         ) : jobs.length === 0 ? (
           <p style={{textAlign:'center', color:'var(--color-muted)', padding:'60px'}}>{t('noJobsFound')}</p>
         ) : (

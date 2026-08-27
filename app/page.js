@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '../lib/supabase'
 import { useLanguage } from '../components/LanguageProvider'
+import ChakraLoader from '../components/ChakraLoader'
 
 export default function Home() {
   const { t, lang } = useLanguage()
@@ -112,8 +113,8 @@ export default function Home() {
         </h2>
 
         {loading ? (
-          <p style={{textAlign:'center', color:'var(--color-muted)', padding:'40px'}}>{t('loading')}</p>
-        ) : jobs.length === 0 ? (
+        <ChakraLoader label={t('loading')} />
+        ): jobs.length === 0 ? (
           <p style={{textAlign:'center', color:'var(--color-muted)', padding:'40px'}}>{t('noJobsFound')}</p>
         ) : (
           jobs.map(job => {
