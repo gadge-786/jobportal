@@ -6,6 +6,7 @@ import DataTable from '../../../components/DataTable'
 import { useLanguage } from '../../../components/LanguageProvider'
 import JobQA from '../../../components/JobQA'
 import ChakraLoader from '../../../components/ChakraLoader'
+import PreviousPapers from '../../../components/PreviousPapers'
 
 export default function JobDetailClient({ id }) {
   const [job, setJob] = useState(null)
@@ -208,7 +209,7 @@ setExamTests(examData && examData.length > 0 ? examData : null)
           ))}
         </div>
       )}
-
+      <PreviousPapers jobId={job.id} />
       <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'14px', padding:'26px', textAlign:'center', marginBottom:'16px'}}>
   <p style={{color:'var(--color-muted)', fontSize:'13px', marginBottom:'18px'}}>
     {t('applyWarning')}
