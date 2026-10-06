@@ -47,7 +47,15 @@ export default async function JobDetailPage({ params }) {
     title: job.title,
     description: job.description || job.title,
     datePosted: job.created_at,
-    validThrough: job.last_date && job.last_date !== 'Check official notification' ? job.last_date : undefined,
+    validThrough: (() => {
+  if (job.last_date && job.last_date !== 'Check official notification') {
+    const parsed = new Date(job.last_date)
+    if (!isNaN(parsed.getTime())) return parsed.toISOString().split('T')[0]
+  }
+  const fallback = new Date(job.created_at)
+  fallback.setDate(fallback.getDate() + 60)
+  return fallback.toISOString().split('T')[0]
+  })(),
     employmentType: job.job_type === 'private' ? 'FULL_TIME' : 'OTHER',
     hiringOrganization: {
       '@type': 'Organization',
