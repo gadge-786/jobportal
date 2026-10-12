@@ -1,5 +1,6 @@
 import { notifyGoogleIndexing } from '../../../lib/googleIndexing'
 import { NextResponse } from 'next/server'
+import { isJobOpening } from '../../../lib/isJobOpening'
 
 export async function POST(request) {
   const secret = request.headers.get('x-webhook-secret')
@@ -12,6 +13,9 @@ export async function POST(request) {
 
   if (!job || !job.id) {
     return NextResponse.json({ error: 'Missing job data' }, { status: 400 })
+  }
+  if (!isJobOpening(job.title)) {
+  return NextResponse.json({ skipped: true, reason: 'Not a job opening' })
   }
 
   const url = `https://dwarsing.in/jobs/${job.id}`
