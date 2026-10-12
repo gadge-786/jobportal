@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import JobDetailClient from './JobDetailClient'
+import { isJobOpening } from '../../../lib/isJobOpening'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -41,7 +42,7 @@ export default async function JobDetailPage({ params }) {
     .eq('id', id)
     .single()
 
-  const jsonLd = job ? {
+  const jsonLd = job && isJobOpening(job.title) ? {
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
     title: job.title,
