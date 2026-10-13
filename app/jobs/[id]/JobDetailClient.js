@@ -163,7 +163,30 @@ setExamTests(examData && examData.length > 0 ? examData : null)
           </div>
         </div>
       )}
-
+      {/* 🎓 Eligibility Criteria Section */}
+      {((job.eligibility_note) || (job.eligibility_table && job.eligibility_table.rows && job.eligibility_table.rows.length > 0)) && (
+        <div style={{marginBottom: '16px'}}>
+          {job.eligibility_note && (
+            <div style={{background: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '14px', padding: '22px', marginBottom: '16px'}}>
+              <h2 style={{fontFamily: 'var(--font-heading)', fontSize: '16px', fontWeight: '700', color: 'var(--color-ink)', marginBottom: '12px'}}>
+                🎓 {t('eligibilityCriteria') || 'Eligibility Criteria'}
+              </h2>
+              <p style={{color: 'var(--color-muted)', lineHeight: '1.8', fontSize: '14.5px', whiteSpace: 'pre-line'}}>
+                {job.eligibility_note}
+              </p>
+            </div>
+          )}
+          
+          {job.eligibility_table && job.eligibility_table.rows && job.eligibility_table.rows.length > 0 && (
+            <DataTable
+              title={t('eligibilityBreakdown') || 'Requirements Breakdown'}
+              accentColor={categoryColor}
+              columns={job.eligibility_table.columns || ['Post / Cadre', 'Educational Qualification & Requirements']}
+              rows={job.eligibility_table.rows}
+            />
+          )}
+        </div>
+      )}
       {job.details_table && Object.keys(job.details_table).length > 0 && (
         <DataTable
           title={t('jobDetails')}
