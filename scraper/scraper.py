@@ -3,8 +3,10 @@ from bs4 import BeautifulSoup
 from supabase import create_client
 from dotenv import load_dotenv
 import os
+import sys
 import time
 import re
+from datetime import datetime, timedelta, timezone
 
 load_dotenv()
 
@@ -15,6 +17,12 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
 }
+
+# Refresh settings: how often and how many existing jobs are re-checked
+MAX_REFRESH_PER_RUN = 20
+REFRESH_WINDOW_DAYS = 30
+MIN_HOURS_BETWEEN_CHECKS = 20
+TRACKED_FIELDS = ['details_table', 'notification_pdf', 'apply_link']
 
 SKIP_KEYWORDS = [
     'android app', 'ios app', 'apple app', 'youtube', 'instagram',
@@ -30,6 +38,15 @@ JOB_KEYWORDS = [
     'syllabus', 'cut off', 'merit list', 'selection', 'hall ticket',
     'exam date', 'interview'
 ]
+
+def now_iso():
+    return datetime.now(timezone.utc).isoformat()
+
+def parse_ts(value):
+    try:
+        return datetime.fromisoformat(value.replace('Z', '+00:00'))
+    except Exception:
+        return None
 
 def get_existing_titles():
     response = supabase.table('jobs').select('title').execute()
@@ -72,13 +89,10 @@ def extract_job_details(detail_url):
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        # Extract details from ONLY the first table that looks like genuine job details
-        # (must contain at least 2 of these keywords in its labels to qualify)
         identifying_keywords = ['organization', 'organisation', 'vacanc', 'qualification',
                                  'official website', 'post name', 'age limit', 'notification',
                                  'notice number', 'selection process']
 
-        # Values that indicate header leakage / garbage rows — skip these
         bad_values = ['details', 'particulars', 'last date', 'date', 'posts', 'post name',
                       'set a', 'set b', 'set c', 'set d']
 
@@ -86,7 +100,7 @@ def extract_job_details(detail_url):
 
         for table in soup.find_all('table'):
             if found_valid_table:
-                break  # Stop after we've found and processed the correct table
+                break
 
             rows = table.find_all('tr')
             temp_rows = []
@@ -104,14 +118,12 @@ def extract_job_details(detail_url):
                     label_lower = label.lower()
                     value_lower = value.lower()
 
-                    # Skip garbage rows
                     if value_lower in bad_values:
                         continue
                     if label.replace('.', '').isdigit():
                         continue
                     if value.strip().upper() in ['A', 'B', 'C', 'D', 'DROPPED']:
                         continue
-                    # Skip rows that look like a related-jobs list (contains "Posts" with a number and a dash)
                     if re.search(r'-\s*\d+\s*posts?', label_lower) or re.search(r'-\s*\d+\s*posts?', value_lower):
                         continue
 
@@ -119,20 +131,17 @@ def extract_job_details(detail_url):
                     if any(kw in label_lower for kw in identifying_keywords):
                         keyword_match_count += 1
 
-            # This table qualifies as the "real" details table if it has at least 2 identifying keywords
             if keyword_match_count >= 2:
                 for label, value in temp_rows:
                     result['details_table'][label] = value
                 found_valid_table = True
 
-        # Find PDF notification link specifically
         for link in soup.find_all('a', href=True):
             href = link['href']
             if href.lower().endswith('.pdf'):
                 result['pdf_link'] = href if href.startswith('http') else f"https://www.freejobalert.com{href}"
                 break
 
-        # Find the actual "apply online" link — usually has "apply" in the link text, and is NOT a pdf
         for link in soup.find_all('a', href=True):
             href = link['href']
             if href.lower().endswith('.pdf'):
@@ -146,8 +155,15 @@ def extract_job_details(detail_url):
 
     return result
 
+def fresh_values(details, source_url):
+    """The three fields we track for changes, in the same form they are stored"""
+    return {
+        'details_table': details.get('details_table') or {},
+        'notification_pdf': details.get('pdf_link'),
+        'apply_link': details.get('official_link') or source_url,
+    }
+
 def build_description(title, category):
-    """Short, clean overview — detailed info now comes from the table separately"""
     category_line = {
         'railway': 'This recruitment is conducted by the Railway Recruitment Board for posts in Indian Railways.',
         'banking': 'This recruitment is for positions in the banking sector.',
@@ -191,9 +207,7 @@ def scrape_freejobalert():
             details = extract_job_details(detail_url)
             time.sleep(0.5)
 
-            # Use official govt link if found, otherwise fallback to the freejobalert page
-            apply_link = details.get('official_link') or detail_url
-            pdf_link = details.get('pdf_link')
+            fresh = fresh_values(details, detail_url)
 
             job_data = {
                 'title': title,
@@ -203,12 +217,15 @@ def scrape_freejobalert():
                 'location': 'All India',
                 'salary': 'As per government norms',
                 'description': build_description(title, category),
-                'apply_link': apply_link,
-                'notification_pdf': pdf_link,
-                'details_table': details.get('details_table') or {},
+                'apply_link': fresh['apply_link'],
+                'notification_pdf': fresh['notification_pdf'],
+                'details_table': fresh['details_table'],
                 'last_date': 'Check official notification',
                 'is_active': True,
-                'is_featured': False
+                'is_featured': False,
+                'source_url': detail_url,
+                'scraped_snapshot': fresh,
+                'last_checked_at': now_iso(),
             }
 
             try:
@@ -216,7 +233,7 @@ def scrape_freejobalert():
                 existing_titles.add(title.lower())
                 jobs_added += 1
                 print(f"✓ Added [{category}]: {title}")
-                if jobs_added >= 15:  # Lower limit since each job now takes longer
+                if jobs_added >= 15:
                     break
             except Exception as e:
                 print(f"Error inserting: {e}")
@@ -227,5 +244,96 @@ def scrape_freejobalert():
     except Exception as e:
         print(f"Scraping error: {e}")
 
+def refresh_existing_jobs(dry_run=False):
+    """Re-check recent scraped jobs and update fields that changed on the source page.
+    Fields you edited by hand are never overwritten."""
+    print("\nChecking existing jobs for source changes..." + (" (DRY RUN, nothing is written)" if dry_run else ""))
+
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=REFRESH_WINDOW_DAYS)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    try:
+        response = (
+            supabase.table('jobs')
+            .select('id, title, source_url, scraped_snapshot, last_checked_at, details_table, notification_pdf, apply_link')
+            .eq('is_active', True)
+            .gte('created_at', cutoff)
+            .execute()
+        )
+    except Exception as e:
+        print(f"Could not load jobs to refresh: {e}")
+        return
+
+    now = datetime.now(timezone.utc)
+    never = datetime.min.replace(tzinfo=timezone.utc)
+    candidates = []
+    for job in response.data:
+        if not job.get('source_url') or not job.get('scraped_snapshot'):
+            continue  # jobs added before this feature, or by hand, are never touched
+        checked = parse_ts(job['last_checked_at']) if job.get('last_checked_at') else None
+        if checked and now - checked < timedelta(hours=MIN_HOURS_BETWEEN_CHECKS):
+            continue
+        candidates.append((checked or never, job))
+
+    candidates.sort(key=lambda pair: pair[0])
+    candidates = candidates[:MAX_REFRESH_PER_RUN]
+    print(f"{len(candidates)} job(s) due for a check")
+
+    changed = protected = failed = 0
+
+    for _, job in candidates:
+        source_url = job['source_url']
+        fresh = fresh_values(extract_job_details(source_url), source_url)
+        time.sleep(0.5)
+
+        looks_empty = (
+            not fresh['details_table']
+            and not fresh['notification_pdf']
+            and fresh['apply_link'] == source_url
+        )
+        if looks_empty:
+            failed += 1
+            print(f"- No usable data (page gone or layout changed): {job['title']}")
+            if not dry_run:
+                supabase.table('jobs').update({'last_checked_at': now_iso()}).eq('id', job['id']).execute()
+            continue
+
+        old_snapshot = job['scraped_snapshot'] or {}
+        updates = {}
+        kept_manual = []
+
+        for field in TRACKED_FIELDS:
+            new_val = fresh[field]
+            if not new_val:
+                continue  # never blank a field because a scrape came back empty
+            if new_val == old_snapshot.get(field):
+                continue  # the source has not changed
+            if job.get(field) == old_snapshot.get(field):
+                updates[field] = new_val  # live value is still the scraped one, safe to refresh
+            else:
+                kept_manual.append(field)  # edited by hand, keep it
+
+        if updates:
+            changed += 1
+            print(f"* Changed on source: {job['title']} -> {', '.join(updates.keys())}")
+        if kept_manual:
+            protected += 1
+            print(f"  Kept your manual edit(s) in {job['title']}: {', '.join(kept_manual)}")
+
+        new_snapshot = {**old_snapshot, **{f: v for f, v in fresh.items() if v}}
+        record = {**updates, 'scraped_snapshot': new_snapshot, 'last_checked_at': now_iso()}
+
+        if not dry_run:
+            res = supabase.table('jobs').update(record).eq('id', job['id']).execute()
+            if not res.data:
+                print(f"  WARNING: update touched no rows for {job['title']} (possible permissions/RLS problem)")
+
+    print(f"\nRefresh done: {changed} changed, {protected} with protected manual edits, {failed} unusable pages.")
+
 if __name__ == '__main__':
-    scrape_freejobalert()
+    mode = sys.argv[1] if len(sys.argv) > 1 else 'all'
+    if mode == 'refresh-dry':
+        refresh_existing_jobs(dry_run=True)
+    elif mode == 'refresh':
+        refresh_existing_jobs()
+    else:
+        scrape_freejobalert()
+        refresh_existing_jobs()
