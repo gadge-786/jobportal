@@ -7,6 +7,7 @@ import sys
 import time
 import re
 from datetime import datetime, timedelta, timezone
+from last_date import derive_last_date, PLACEHOLDER
 
 load_dotenv()
 
@@ -220,7 +221,7 @@ def scrape_freejobalert():
                 'apply_link': fresh['apply_link'],
                 'notification_pdf': fresh['notification_pdf'],
                 'details_table': fresh['details_table'],
-                'last_date': 'Check official notification',
+                'last_date': derive_last_date(details.get('details_table')) or PLACEHOLDER,
                 'is_active': True,
                 'is_featured': False,
                 'source_url': detail_url,
