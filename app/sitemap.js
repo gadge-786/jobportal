@@ -10,15 +10,15 @@ export default async function sitemap() {
 
   const { data: jobs } = await supabase
     .from('jobs')
-    .select('id, created_at')
+    .select('id, updated_at')
     .eq('is_active', true)
 
   const jobUrls = (jobs || []).map((job) => ({
-  url: `${baseUrl}/jobs/${job.id}`,
-  lastModified: new Date(job.created_at).toISOString(),
-  changeFrequency: 'daily',
-  priority: 0.8,
-}))
+    url: `${baseUrl}/jobs/${job.id}`,
+    lastModified: new Date(job.updated_at),
+    changeFrequency: 'daily',
+    priority: 0.8,
+  }))
 
   const staticUrls = [
     {
