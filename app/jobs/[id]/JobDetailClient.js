@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../../lib/supabase'
+import HowToApply from '../../../components/HowToApply'
 import DataTable from '../../../components/DataTable'
 import { useLanguage } from '../../../components/LanguageProvider'
 import JobQA from '../../../components/JobQA'
@@ -238,6 +239,7 @@ setExamTests(examData && examData.length > 0 ? examData : null)
     {t('applyWarning')}
   </p>
         <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>
+          <HowToApply job={job} accentColor={categoryColor} />
           <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
             {t('applyNow')}
           </a>
