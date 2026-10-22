@@ -238,8 +238,12 @@ setExamTests(examData && examData.length > 0 ? examData : null)
   <p style={{color:'var(--color-muted)', fontSize:'13px', marginBottom:'18px'}}>
     {t('applyWarning')}
   </p>
+  <div>
+    <HowToApply job={job} accentColor={categoryColor} />
+  </div>
+  
         <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>
-          <HowToApply job={job} accentColor={categoryColor} />
+          
           <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
             {t('applyNow')}
           </a>
