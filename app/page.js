@@ -1,32 +1,22 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '../lib/supabase'
 import { useLanguage } from '../components/LanguageProvider'
 import ChakraLoader from '../components/ChakraLoader'
+import UpdatesTicker from '../components/UpdatesTicker'
 
 export default function Home() {
   const { t, lang } = useLanguage()
   const [jobs, setJobs] = useState([])
   const [search, setSearch] = useState('')
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [view, setView] = useState('home') // 'home' = 24h update panels, 'list' = search / category results
 
-  useEffect(() => { fetchJobs() }, [])
-
-  async function fetchJobs() {
-    setLoading(true)
-    const { data } = await supabase
-      .from('jobs')
-      .select('*')
-      .eq('is_active', true)
-      .or('category.is.null,category.not.in.(results,admit-cards)')
-      .order('created_at', { ascending: false })
-      .limit(10)
-    setJobs(data || [])
-    setLoading(false)
-  }
+  function goHome() { setSearch(''); setView('home') }
 
   async function handleSearch() {
+    setView('list')
     setLoading(true)
     const { data } = await supabase
       .from('jobs')
@@ -52,6 +42,7 @@ export default function Home() {
   ]
 
   async function filterByCategory(cat) {
+    setView('list')
     setLoading(true)
     const { data } = await supabase
       .from('jobs')
@@ -106,14 +97,25 @@ export default function Home() {
               {c.name}
             </button>
           ))}
-          <button onClick={fetchJobs}
+          <button onClick={goHome}
             style={{padding:'9px 18px', borderRadius:'20px', border:'1.5px solid var(--color-border)', background:'var(--color-card)', color:'var(--color-muted)', cursor:'pointer', fontSize:'13px', fontWeight:'600'}}>
             {t('showAll')}
           </button>
         </div>
 
+        {view === 'home' ? (
+          <>
+            <UpdatesTicker />
+            <div style={{textAlign:'center', margin:'8px 0 24px'}}>
+              <Link href="/jobs" style={{display:'inline-block', background:'var(--color-ink)', color:'white', padding:'11px 26px', borderRadius:'10px', textDecoration:'none', fontSize:'14px', fontWeight:'700'}}>
+                {t('allJobs')} →
+              </Link>
+            </div>
+          </>
+        ) : (
+        <>
         <h2 style={{fontSize:'20px', fontWeight:'700', marginBottom:'18px', color:'var(--color-ink)', fontFamily:'var(--font-heading)'}}>
-          {t('latestJobs')}
+          {t('searchResultsHeading') || t('latestJobs')}
         </h2>
 
         {loading ? (
@@ -153,6 +155,8 @@ export default function Home() {
               </div>
             )
           })
+        )}
+        </>
         )}
       </div>
     </div>
