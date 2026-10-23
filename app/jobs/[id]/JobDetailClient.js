@@ -56,7 +56,10 @@ setExamTests(examData && examData.length > 0 ? examData : null)
     'teaching': '#d97706',
     'it-software': '#059669',
     'private': '#6b7280',
+    'admit-cards': '#0d9488',
+    'results': '#be185d',
   }
+  const isUpdatePage = job.category === 'results' || job.category === 'admit-cards'
 
   const categoryColor = categoryColors[job.category] || '#1a56db'
 
@@ -101,10 +104,10 @@ setExamTests(examData && examData.length > 0 ? examData : null)
       <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'12px', margin:'16px 0'}}>
         {[
           {label:'Location', value: job.location},
-          {label:'Salary / Pay Scale', value: job.salary},
+          {label:'Salary / Pay Scale', value: job.salary, openingOnly: true},
           {label:'Job Type', value: job.job_type},
-          {label:'Last Date to Apply', value: job.last_date},
-        ].map(({label, value}) => (
+          {label:'Last Date to Apply', value: job.last_date, openingOnly: true},
+        ].filter(f => !(isUpdatePage && f.openingOnly)).map(({label, value}) => (
           <div key={label} style={{background:'white', border:'1px solid #e5e7eb', borderRadius:'12px', padding:'16px'}}>
             <div style={{fontSize:'11px', color:'#6b7280', marginBottom:'4px'}}>{label}</div>
             <div style={{fontSize:'15px', fontWeight:'600', color:'#111827'}}>{value || 'Check notification'}</div>
@@ -235,24 +238,28 @@ setExamTests(examData && examData.length > 0 ? examData : null)
       )}
       <PreviousPapers jobId={job.id} />
       <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'14px', padding:'26px', textAlign:'center', marginBottom:'16px'}}>
-  <p style={{color:'var(--color-muted)', fontSize:'13px', marginBottom:'18px'}}>
-    {t('applyWarning')}
-  </p>
-  <div>
-    <HowToApply job={job} accentColor={categoryColor} />
-  </div>
+  {!isUpdatePage && (
+    <>
+      <p style={{color:'var(--color-muted)', fontSize:'13px', marginBottom:'18px'}}>
+        {t('applyWarning')}
+      </p>
+      <div>
+        <HowToApply job={job} accentColor={categoryColor} />
+      </div>
+    </>
+  )}
   
         <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>
           
           <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
-            {t('applyNow')}
+            {job.category === 'results' ? t('viewResult') : job.category === 'admit-cards' ? t('downloadAdmitCard') : t('applyNow')}
           </a>
           {job.notification_pdf && (
             <a href={job.notification_pdf} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:'white', color:categoryColor, border:'2px solid ' + categoryColor, padding:'14px 38px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
               {t('viewNotification')}
             </a>
           )}
-          {job.admit_card_link && (
+          {job.admit_card_link && job.category !== 'admit-cards' && (
             <a href={job.admit_card_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:'white', color:'#059669', border:'2px solid #059669', padding:'14px 38px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
               {t('downloadAdmitCard')}
             </a>

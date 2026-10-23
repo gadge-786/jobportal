@@ -19,6 +19,7 @@ export default function Home() {
       .from('jobs')
       .select('*')
       .eq('is_active', true)
+      .or('category.is.null,category.not.in.(results,admit-cards)')
       .order('created_at', { ascending: false })
       .limit(10)
     setJobs(data || [])
@@ -46,6 +47,8 @@ export default function Home() {
     { name: '📚 Teaching', slug: 'teaching', color: '#d97706' },
     { name: '🏠 WFH Jobs', slug: 'wfh', color: '#6b7280' },
     { name: '📝 Entrance Exams', slug: 'entrance-exams', color: '#9333ea' },
+    { name: '🪪 Admit Cards', slug: 'admit-cards', color: '#0d9488' },
+    { name: '📊 Results', slug: 'results', color: '#be185d' },
   ]
 
   async function filterByCategory(cat) {
@@ -55,6 +58,7 @@ export default function Home() {
       .select('*')
       .eq('category', cat)
       .eq('is_active', true)
+      .order('created_at', { ascending: false })
     setJobs(data || [])
     setLoading(false)
   }
@@ -141,7 +145,7 @@ export default function Home() {
                   </span>
                 </div>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'16px', flexWrap:'wrap', gap:'8px'}}>
-                  <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>
+                  {job.category === 'results' || job.category === 'admit-cards' ? <span /> : <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>}
                   <Link href={`/jobs/${job.id}`} style={{background:'var(--color-ink)', color:'white', padding:'9px 20px', borderRadius:'8px', textDecoration:'none', fontSize:'13px', fontWeight:'600'}}>
                     {t('viewDetails')} →
                   </Link>

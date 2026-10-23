@@ -54,6 +54,12 @@ def get_existing_titles():
     return {job['title'].lower() for job in response.data}
 
 def determine_category(title):
+    t = title.lower()
+    if any(w in t for w in ['admit card', 'hall ticket', 'call letter', 'exam city']):
+        return 'admit-cards'
+    if any(w in t for w in ['result', 'merit list', 'cut off', 'scorecard']):
+        return 'results' 
+
     title_lower = title.lower()
     if any(w in title_lower for w in ['railway', 'rrb', 'ntpc', 'loco pilot', 'station master', 'rpf']):
         return 'railway'

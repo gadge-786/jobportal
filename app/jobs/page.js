@@ -16,6 +16,8 @@ const categories = [
   { name: '💼 Private',   slug: 'private', color: '#6b7280' },
   { name: '🏠 WFH Jobs',  slug: 'wfh', color: '#6b7280' },
   { name: '📝 Entrance Exams', slug: 'entrance-exams', color: '#9333ea' },
+  { name: '🪪 Admit Cards', slug: 'admit-cards', color: '#0d9488' },
+  { name: '📊 Results', slug: 'results', color: '#be185d' },
 ]
 
 export default function AllJobs({ searchParams }) {
@@ -42,6 +44,9 @@ export default function AllJobs({ searchParams }) {
 
     if (categoryFilter) {
       query = query.eq('category', categoryFilter)
+    } else {
+      // default list = real openings only; results & admit cards have their own buttons
+      query = query.or('category.is.null,category.not.in.(results,admit-cards)')
     }
 
     const { data, error } = await query
@@ -147,7 +152,7 @@ export default function AllJobs({ searchParams }) {
                   </span>
                 </div>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'16px', flexWrap:'wrap', gap:'8px'}}>
-                  <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>
+                  {job.category === 'results' || job.category === 'admit-cards' ? <span /> : <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>}
                   <Link href={`/jobs/${job.id}`}
                     style={{background:'var(--color-ink)', color:'white', padding:'9px 20px', borderRadius:'8px', textDecoration:'none', fontSize:'13px', fontWeight:'600'}}>
                     {t('viewDetails')} →
