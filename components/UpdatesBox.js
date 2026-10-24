@@ -6,7 +6,7 @@ import { useLanguage } from './LanguageProvider'
 
 const COUNT = 10           // latest posts shown per box
 const ROW_H = 74           // px - fixed so the loop is seamless
-const VISIBLE_ROWS = 6     // rows visible before scrolling starts
+const DEFAULT_VISIBLE_ROWS = 6  // rows visible before scrolling starts
 const SECONDS_PER_ROW = 3  // scroll speed
 const MR = 'mr'
 
@@ -17,7 +17,7 @@ function postedText(iso, mr) {
 }
 
 // category: 'results' | 'admit-cards'
-export default function UpdatesBox({ category, heading, headingMr, color }) {
+export default function UpdatesBox({ category, heading, headingMr, color, visibleRows = DEFAULT_VISIBLE_ROWS }) {
   const { lang } = useLanguage()
   const mr = lang === MR
   const [items, setItems] = useState(null)
@@ -38,7 +38,7 @@ export default function UpdatesBox({ category, heading, headingMr, color }) {
   }, [category])
 
   const list = items || []
-  const animate = list.length > VISIBLE_ROWS
+  const animate = list.length > visibleRows
   const rows = animate ? [...list, ...list] : list
 
   return (
@@ -77,7 +77,7 @@ export default function UpdatesBox({ category, heading, headingMr, color }) {
           {mr ? 'अजून काहीही नाही.' : 'Nothing here yet.'}
         </p>
       ) : (
-        <div className="dw-ticker" data-animate={animate} style={{height: animate ? ROW_H * VISIBLE_ROWS : 'auto'}}>
+        <div className="dw-ticker" data-animate={animate} style={{height: animate ? ROW_H * visibleRows : 'auto'}}>
           <div className="dw-track" style={animate ? {animationDuration: `${list.length * SECONDS_PER_ROW}s`} : undefined}>
             {rows.map((job, i) => (
               <Link key={`${job.id}-${i}`} href={`/jobs/${job.id}`} className="dw-row" style={{height: ROW_H}}>

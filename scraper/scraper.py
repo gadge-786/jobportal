@@ -59,6 +59,8 @@ def determine_category(title):
         return 'admit-cards'
     if any(w in t for w in ['result', 'merit list', 'cut off', 'scorecard']):
         return 'results' 
+    if 'answer key' in t:
+        return 'answer-keys'
 
     title_lower = title.lower()
     if any(w in title_lower for w in ['railway', 'rrb', 'ntpc', 'loco pilot', 'station master', 'rpf']):

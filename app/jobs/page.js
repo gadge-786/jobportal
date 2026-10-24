@@ -18,6 +18,7 @@ const categories = [
   { name: '📝 Entrance Exams', slug: 'entrance-exams', color: '#9333ea' },
   { name: '🪪 Admit Cards', slug: 'admit-cards', color: '#0d9488' },
   { name: '📊 Results', slug: 'results', color: '#be185d' },
+  { name: '🔑 Answer Keys', slug: 'answer-keys', color: '#b45309' },
 ]
 
 export default function AllJobs({ searchParams }) {
@@ -46,7 +47,7 @@ export default function AllJobs({ searchParams }) {
       query = query.eq('category', categoryFilter)
     } else {
       // default list = real openings only; results & admit cards have their own buttons
-      query = query.or('category.is.null,category.not.in.(results,admit-cards)')
+      query = query.or('category.is.null,category.not.in.(results,admit-cards,answer-keys)')
     }
 
     const { data, error } = await query
@@ -152,7 +153,7 @@ export default function AllJobs({ searchParams }) {
                   </span>
                 </div>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'16px', flexWrap:'wrap', gap:'8px'}}>
-                  {job.category === 'results' || job.category === 'admit-cards' ? <span /> : <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>}
+                  {['results','admit-cards','answer-keys'].includes(job.category) ? <span /> : <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>}
                   <Link href={`/jobs/${job.id}`}
                     style={{background:'var(--color-ink)', color:'white', padding:'9px 20px', borderRadius:'8px', textDecoration:'none', fontSize:'13px', fontWeight:'600'}}>
                     {t('viewDetails')} →
