@@ -24,13 +24,14 @@ export default function UpdatesBox({ category, heading, headingMr, color }) {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('jobs')
-        .select('id,title,title_mr,created_at')
+        .select('*')
         .eq('is_active', true)
         .eq('category', category)
         .order('created_at', { ascending: false })
         .limit(COUNT)
+      if (error) console.error('UpdatesBox', category, error)
       setItems(data || [])
     }
     load()

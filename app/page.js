@@ -117,18 +117,18 @@ export default function Home() {
 
         <div className="dw-center">
 
-        <div style={{display:'flex', gap:'10px', flexWrap:'wrap', marginBottom:'32px', justifyContent:'center'}}>
+        <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'24px', justifyContent:'center'}}>
           {categories.map(c => (
             <button key={c.slug} onClick={() => filterByCategory(c.slug)}
               style={{
-                padding:'9px 18px', borderRadius:'20px', border:`1.5px solid ${c.color}33`, background:'var(--color-card)',
-                color:c.color, cursor:'pointer', fontWeight:'600', fontSize:'13px', display:'flex', alignItems:'center', gap:'6px'
+                padding:'7px 13px', borderRadius:'20px', border:`1.5px solid ${c.color}33`, background:'var(--color-card)',
+                color:c.color, cursor:'pointer', fontWeight:'600', fontSize:'12.5px', display:'flex', alignItems:'center', gap:'6px'
               }}>
               {c.name}
             </button>
           ))}
           <button onClick={fetchJobs}
-            style={{padding:'9px 18px', borderRadius:'20px', border:'1.5px solid var(--color-border)', background:'var(--color-card)', color:'var(--color-muted)', cursor:'pointer', fontSize:'13px', fontWeight:'600'}}>
+            style={{padding:'7px 13px', borderRadius:'20px', border:'1.5px solid var(--color-border)', background:'var(--color-card)', color:'var(--color-muted)', cursor:'pointer', fontSize:'12.5px', fontWeight:'600'}}>
             {t('showAll')}
           </button>
         </div>
