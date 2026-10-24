@@ -1,22 +1,34 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '../lib/supabase'
 import { useLanguage } from '../components/LanguageProvider'
 import ChakraLoader from '../components/ChakraLoader'
-import UpdatesTicker from '../components/UpdatesTicker'
+import UpdatesBox from '../components/UpdatesBox'
 
 export default function Home() {
   const { t, lang } = useLanguage()
   const [jobs, setJobs] = useState([])
   const [search, setSearch] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [view, setView] = useState('home') // 'home' = 24h update panels, 'list' = search / category results
+  const [loading, setLoading] = useState(true)
 
-  function goHome() { setSearch(''); setView('home') }
+  useEffect(() => { fetchJobs() }, [])
+
+  async function fetchJobs() {
+    setSearch('')
+    setLoading(true)
+    const { data } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('is_active', true)
+      .or('category.is.null,category.not.in.(results,admit-cards)')
+      .order('created_at', { ascending: false })
+      .limit(10)
+    setJobs(data || [])
+    setLoading(false)
+  }
 
   async function handleSearch() {
-    setView('list')
     setLoading(true)
     const { data } = await supabase
       .from('jobs')
@@ -42,7 +54,6 @@ export default function Home() {
   ]
 
   async function filterByCategory(cat) {
-    setView('list')
     setLoading(true)
     const { data } = await supabase
       .from('jobs')
@@ -85,7 +96,26 @@ export default function Home() {
 
       <hr className="perforated-divider" />
 
-      <div style={{maxWidth:'900px', margin:'0 auto', padding:'32px 16px'}}>
+      <style>{`
+        .dw-home{max-width:1280px;margin:0 auto;padding:32px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+        .dw-center{order:1;min-width:0}
+        .dw-right{order:2}
+        .dw-left{order:3}
+        @media (min-width:1100px){
+          .dw-home{grid-template-columns:280px minmax(0,1fr) 280px;align-items:start}
+          .dw-left{order:1;position:sticky;top:16px}
+          .dw-center{order:2}
+          .dw-right{order:3;position:sticky;top:16px}
+        }
+      `}</style>
+
+      <div className="dw-home">
+
+        <aside className="dw-left">
+          <UpdatesBox category="results" heading="Result Updates" headingMr="निकाल अपडेट्स" color="#be185d" />
+        </aside>
+
+        <div className="dw-center">
 
         <div style={{display:'flex', gap:'10px', flexWrap:'wrap', marginBottom:'32px', justifyContent:'center'}}>
           {categories.map(c => (
@@ -97,25 +127,14 @@ export default function Home() {
               {c.name}
             </button>
           ))}
-          <button onClick={goHome}
+          <button onClick={fetchJobs}
             style={{padding:'9px 18px', borderRadius:'20px', border:'1.5px solid var(--color-border)', background:'var(--color-card)', color:'var(--color-muted)', cursor:'pointer', fontSize:'13px', fontWeight:'600'}}>
             {t('showAll')}
           </button>
         </div>
 
-        {view === 'home' ? (
-          <>
-            <UpdatesTicker />
-            <div style={{textAlign:'center', margin:'8px 0 24px'}}>
-              <Link href="/jobs" style={{display:'inline-block', background:'var(--color-ink)', color:'white', padding:'11px 26px', borderRadius:'10px', textDecoration:'none', fontSize:'14px', fontWeight:'700'}}>
-                {t('allJobs')} →
-              </Link>
-            </div>
-          </>
-        ) : (
-        <>
         <h2 style={{fontSize:'20px', fontWeight:'700', marginBottom:'18px', color:'var(--color-ink)', fontFamily:'var(--font-heading)'}}>
-          {t('searchResultsHeading') || t('latestJobs')}
+          {t('latestJobs')}
         </h2>
 
         {loading ? (
@@ -156,8 +175,12 @@ export default function Home() {
             )
           })
         )}
-        </>
-        )}
+        </div>
+
+        <aside className="dw-right">
+          <UpdatesBox category="admit-cards" heading="Admit Card Updates" headingMr="प्रवेशपत्र अपडेट्स" color="#0d9488" />
+        </aside>
+
       </div>
     </div>
   )
