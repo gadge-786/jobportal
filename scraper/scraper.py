@@ -8,6 +8,7 @@ import time
 import re
 from datetime import datetime, timedelta, timezone
 from last_date import derive_last_date, PLACEHOLDER
+from states import determine_state
 
 load_dotenv()
 
@@ -180,6 +181,7 @@ def build_description(title, category):
         'teaching': 'This recruitment is for teaching positions in government institutions.',
         'it-software': 'This is a private sector IT and software industry opportunity.',
         'government': 'This recruitment is conducted by a government department.',
+        'state': determine_state(title),
     }
     return f"{title}. {category_line.get(category, category_line['government'])} Full details including vacancies, important dates and eligibility are listed below."
 

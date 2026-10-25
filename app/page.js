@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import { useLanguage } from '../components/LanguageProvider'
 import ChakraLoader from '../components/ChakraLoader'
 import UpdatesBox from '../components/UpdatesBox'
+import StatesBox from '../components/StatesBox'
 
 export default function Home() {
   const { t, lang } = useLanguage()
@@ -104,9 +105,9 @@ export default function Home() {
         .dw-left{order:3}
         @media (min-width:1100px){
           .dw-home{grid-template-columns:280px minmax(0,1fr) 280px;align-items:start}
-          .dw-left{order:1;position:sticky;top:16px}
+          .dw-left{order:1}
           .dw-center{order:2}
-          .dw-right{order:3;position:sticky;top:16px}
+          .dw-right{order:3}
         }
       `}</style>
 
@@ -179,8 +180,9 @@ export default function Home() {
         )}
         </div>
 
-        <aside className="dw-right">
+        <aside className="dw-right" style={{display:'flex', flexDirection:'column', gap:'16px'}}>
           <UpdatesBox category="admit-cards" heading="Admit Card Updates" headingMr="प्रवेशपत्र अपडेट्स" color="#0d9488" />
+          <StatesBox />
         </aside>
 
       </div>

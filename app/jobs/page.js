@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 import { useLanguage } from '../../components/LanguageProvider'
 import ChakraLoader from '../../components/ChakraLoader'
+import { stateLabel } from '../../lib/states'
 
 const categories = [
   { name: '🏛️ Govt Jobs', slug: 'government', color: '#1a56db' },
@@ -25,6 +26,7 @@ export default function AllJobs({ searchParams }) {
   const { t, lang } = useLanguage()
   const resolvedParams = use(searchParams)
   const categoryFromUrl = resolvedParams?.category || null
+  const stateFromUrl = resolvedParams?.state || null
 
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
@@ -32,10 +34,10 @@ export default function AllJobs({ searchParams }) {
   const [activeCategory, setActiveCategory] = useState(categoryFromUrl)
 
   useEffect(() => {
-    fetchJobs(categoryFromUrl)
-  }, [categoryFromUrl])
+    fetchJobs(categoryFromUrl, stateFromUrl)
+  }, [categoryFromUrl, stateFromUrl])
 
-  async function fetchJobs(categoryFilter) {
+  async function fetchJobs(categoryFilter, stateFilter) {
     setLoading(true)
     let query = supabase
       .from('jobs')
@@ -49,6 +51,9 @@ export default function AllJobs({ searchParams }) {
       // default list = real openings only; results & admit cards have their own buttons
       query = query.or('category.is.null,category.not.in.(results,admit-cards,answer-keys)')
     }
+
+    if (stateFilter === 'all-india') query = query.is('state', null)
+    else if (stateFilter) query = query.eq('state', stateFilter)
 
     const { data, error } = await query
     if (error) console.error(error)
@@ -98,7 +103,7 @@ export default function AllJobs({ searchParams }) {
       <div style={{maxWidth:'900px', margin:'0 auto', padding:'28px 16px'}}>
 
         <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'24px'}}>
-          <button onClick={() => { setActiveCategory(null); fetchJobs(null) }}
+          <button onClick={() => { setActiveCategory(null); fetchJobs(null, stateFromUrl) }}
             style={{
               padding:'8px 16px', borderRadius:'20px', border: activeCategory===null ? '1.5px solid var(--color-ink)' : '1.5px solid var(--color-border)',
               background: activeCategory===null ? 'var(--color-ink)' : 'var(--color-card)',
@@ -108,7 +113,7 @@ export default function AllJobs({ searchParams }) {
             {t('allJobs')}
           </button>
           {categories.map(c => (
-            <button key={c.slug} onClick={() => { setActiveCategory(c.slug); fetchJobs(c.slug) }}
+            <button key={c.slug} onClick={() => { setActiveCategory(c.slug); fetchJobs(c.slug, stateFromUrl) }}
               style={{
                 padding:'8px 16px', borderRadius:'20px', border: `1.5px solid ${activeCategory===c.slug ? c.color : c.color+'33'}`,
                 background: activeCategory===c.slug ? c.color : 'var(--color-card)',
@@ -119,6 +124,13 @@ export default function AllJobs({ searchParams }) {
             </button>
           ))}
         </div>
+
+        {stateFromUrl && (
+          <div style={{display:'inline-flex', alignItems:'center', gap:'8px', background:'var(--color-card)', border:'1.5px solid var(--color-ink)', borderRadius:'20px', padding:'6px 8px 6px 14px', marginBottom:'14px', fontSize:'13px', fontWeight:'600', color:'var(--color-ink)'}}>
+            📍 {stateLabel(stateFromUrl, lang === 'mr')}
+            <Link href="/jobs" aria-label="Clear state filter" style={{background:'var(--color-ink)', color:'white', borderRadius:'50%', width:'20px', height:'20px', display:'inline-flex', alignItems:'center', justifyContent:'center', textDecoration:'none', fontSize:'12px'}}>✕</Link>
+          </div>
+        )}
 
         {!loading && (
           <p style={{fontSize:'13px', color:'var(--color-muted)', marginBottom:'14px'}}>
