@@ -50,9 +50,26 @@ def parse_ts(value):
     except Exception:
         return None
 
-def get_existing_titles():
-    response = supabase.table('jobs').select('title').execute()
-    return {job['title'].lower() for job in response.data}
+def get_existing_jobs():
+    """Titles AND source URLs of every job already stored.
+    Matching on source_url means a job you re-titled by hand (e.g. translated to Odia)
+    is still recognised as existing and is not inserted again."""
+    titles, urls = set(), set()
+    start, page = 0, 1000
+    while True:
+        response = supabase.table('jobs').select('title, source_url').range(start, start + page - 1).execute()
+        for job in response.data:
+            if job.get('title'):
+                titles.add(job['title'].lower())
+            if job.get('source_url'):
+                urls.add(job['source_url'].strip().rstrip('/').lower())
+        if len(response.data) < page:
+            break
+        start += page
+    return titles, urls
+
+def norm_url(u):
+    return u.strip().rstrip('/').lower()
 
 def determine_category(title):
     t = title.lower()
@@ -181,7 +198,6 @@ def build_description(title, category):
         'teaching': 'This recruitment is for teaching positions in government institutions.',
         'it-software': 'This is a private sector IT and software industry opportunity.',
         'government': 'This recruitment is conducted by a government department.',
-        'state': determine_state(title),
     }
     return f"{title}. {category_line.get(category, category_line['government'])} Full details including vacancies, important dates and eligibility are listed below."
 
@@ -192,7 +208,7 @@ def scrape_freejobalert():
         response = requests.get(url, headers=HEADERS, timeout=15)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
-        existing_titles = get_existing_titles()
+        existing_titles, existing_urls = get_existing_jobs()
         print(f"Existing jobs in database: {len(existing_titles)}")
         jobs_added = 0
 
@@ -202,15 +218,15 @@ def scrape_freejobalert():
 
             if not is_real_job(title):
                 continue
-            if title.lower() in existing_titles:
-                continue
-
             if href.startswith('/'):
                 detail_url = f"https://www.freejobalert.com{href}"
             elif href.startswith('http'):
                 detail_url = href
             else:
                 detail_url = f"https://www.freejobalert.com/{href}"
+
+            if title.lower() in existing_titles or norm_url(detail_url) in existing_urls:
+                continue
 
             category = determine_category(title)
 
@@ -224,6 +240,7 @@ def scrape_freejobalert():
                 'title': title,
                 'company': 'Government of India',
                 'category': category,
+                'state': determine_state(title),
                 'job_type': 'government',
                 'location': 'All India',
                 'salary': 'As per government norms',
@@ -242,6 +259,7 @@ def scrape_freejobalert():
             try:
                 supabase.table('jobs').insert(job_data).execute()
                 existing_titles.add(title.lower())
+                existing_urls.add(norm_url(detail_url))
                 jobs_added += 1
                 print(f"✓ Added [{category}]: {title}")
                 if jobs_added >= 15:
