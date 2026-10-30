@@ -7,6 +7,7 @@ import DataTable from '../../../components/DataTable'
 import { useLanguage } from '../../../components/LanguageProvider'
 import JobQA from '../../../components/JobQA'
 import ChakraLoader from '../../../components/ChakraLoader'
+import { stateLabel } from '../../../lib/states'
 import PreviousPapers from '../../../components/PreviousPapers'
 
 export default function JobDetailClient({ id }) {
@@ -100,6 +101,11 @@ setExamTests(examData && examData.length > 0 ? examData : null)
         {lang === 'mr' && job.title_mr ? job.title_mr : job.title}
       </h1>
       <p style={{fontSize:'15px', opacity:0.92, margin:'0', position:'relative'}}>{t('company')}: {job.company}</p>
+      {job.state && (
+        <Link href={`/state/${job.state}`} style={{display:'inline-block', marginTop:'10px', position:'relative', background:'rgba(255,255,255,0.18)', color:'white', padding:'4px 12px', borderRadius:'20px', fontSize:'12.5px', fontWeight:'600', textDecoration:'none'}}>
+          📍 {stateLabel(job.state, lang === 'mr')} →
+        </Link>
+      )}
       </div>
 
       <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'12px', margin:'16px 0'}}>

@@ -85,6 +85,38 @@ commit;
 -- select count(*) from jobs where updated_at > now() - interval '5 minutes';  -- expect 0
 """
 
+def auto_sql():
+    whens = '\n    '.join(
+        "when t ~* '\\m(?:%s)\\M' then '%s'" % (_kw(v[2]), slug) for slug, v in STATES.items())
+    return f"""-- Auto-fill jobs.state on every manual or scripted insert
+create or replace function detect_state(t text) returns text
+language sql immutable as $$
+  select case
+    {whens}
+    else null
+  end
+$$;
+
+create or replace function set_job_state() returns trigger
+language plpgsql as $$
+begin
+  if new.state is null and new.title is not null then
+    new.state := detect_state(new.title);
+  end if;
+  return new;
+end
+$$;
+
+drop trigger if exists trigger_set_job_state on jobs;
+create trigger trigger_set_job_state
+before insert or update of title on jobs
+for each row execute function set_job_state();
+
+-- TEST (changes nothing):
+-- select detect_state('MPSC Group C Recruitment 2026');   -- maharashtra
+-- select detect_state('SSC CGL 2026');                      -- null (central)
+"""
+
 def js():
     items = [{'slug': s, 'name': v[0], 'mr': v[1]} for s, v in STATES.items()]
     return ("// Generated from scraper/states.py - do not edit by hand\n"
@@ -97,4 +129,5 @@ def js():
 if __name__ == '__main__':
     if '--sql' in sys.argv: print(sql())
     elif '--js' in sys.argv: print(js())
+    elif '--auto-sql' in sys.argv: print(auto_sql())
     else: print('use --sql or --js')

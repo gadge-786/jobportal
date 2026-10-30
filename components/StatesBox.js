@@ -59,7 +59,7 @@ export default function StatesBox() {
       ) : (
         <div style={{maxHeight:'340px', overflowY:'auto'}}>
           {rows.map(r => (
-            <Link key={r.slug} href={`/jobs?state=${r.slug}`} className="dw-state">
+            <Link key={r.slug} href={`/state/${r.slug}`} className="dw-state">
               <span>{stateLabel(r.slug, mr)}</span>
               <span className="dw-state-count">{r.count}</span>
             </Link>
