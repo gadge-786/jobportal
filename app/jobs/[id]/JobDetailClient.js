@@ -9,6 +9,7 @@ import JobQA from '../../../components/JobQA'
 import ChakraLoader from '../../../components/ChakraLoader'
 import { stateLabel } from '../../../lib/states'
 import PreviousPapers from '../../../components/PreviousPapers'
+import { normalizeJob } from '../../../lib/normalizeJob'
 
 export default function JobDetailClient({ id }) {
   const [job, setJob] = useState(null)
@@ -25,7 +26,7 @@ export default function JobDetailClient({ id }) {
         .select('*')
         .eq('id', id)
         .single()
-      setJob(data)
+      setJob(normalizeJob(data))
       if (data) {
     const { data: examData } = await supabase
   .from('exam_tests')
