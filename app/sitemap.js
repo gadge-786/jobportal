@@ -42,7 +42,7 @@ export default async function sitemap() {
   const latest = {}
   for (const job of jobs) {
     if (NON_OPENINGS.includes(job.category)) continue
-    const key = job.state || 'all-india'
+    const key = (String(job.state || '').trim().toLowerCase().replace(/\s+/g, '-') || 'all-india')
     if (!latest[key] || job.updated_at > latest[key]) latest[key] = job.updated_at
   }
 

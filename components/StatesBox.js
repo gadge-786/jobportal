@@ -26,7 +26,7 @@ export default function StatesBox() {
       const counts = {}
       for (const j of data || []) {
         if (NON_OPENINGS.includes(j.category)) continue // count real openings only
-        const key = j.state || 'all-india'
+        const key = (String(j.state || '').trim().toLowerCase().replace(/\s+/g, '-') || 'all-india')
         counts[key] = (counts[key] || 0) + 1
       }
       const list = Object.entries(counts).map(([slug, count]) => ({ slug, count }))

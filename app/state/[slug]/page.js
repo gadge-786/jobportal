@@ -42,7 +42,7 @@ const getCounts = cache(async () => {
   const c = {}
   for (const j of data || []) {
     if (NON_OPENINGS.includes(j.category)) continue
-    const k = j.state || 'all-india'
+    const k = (String(j.state || '').trim().toLowerCase().replace(/\s+/g, '-') || 'all-india')
     c[k] = (c[k] || 0) + 1
   }
   return c
