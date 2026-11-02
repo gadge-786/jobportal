@@ -22,7 +22,7 @@ export default function Home() {
       .from('jobs')
       .select('*')
       .eq('is_active', true)
-      .or('category.is.null,category.not.in.(results,admit-cards,answer-keys)')
+      .or('category.is.null,category.not.in.(results,admit-cards,answer-keys,syllabus)')
       .order('created_at', { ascending: false })
       .limit(10)
     setJobs(data || [])
@@ -53,6 +53,7 @@ export default function Home() {
     { name: '🪪 Admit Cards', slug: 'admit-cards', color: '#0d9488' },
     { name: '📊 Results', slug: 'results', color: '#be185d' },
     { name: '🔑 Answer Keys', slug: 'answer-keys', color: '#b45309' },
+    { name: '📖 Syllabus', slug: 'syllabus', color: '#4f46e5' },
   ]
 
   async function filterByCategory(cat) {
@@ -116,6 +117,7 @@ export default function Home() {
         <aside className="dw-left" style={{display:'flex', flexDirection:'column', gap:'16px'}}>
           <UpdatesBox category="results" heading="Result Updates" headingMr="निकाल अपडेट्स" color="#be185d" visibleRows={4} />
           <UpdatesBox category="answer-keys" heading="Answer Key Updates" headingMr="उत्तरतालिका अपडेट्स" color="#b45309" visibleRows={4} />
+          <UpdatesBox category="syllabus" heading="Syllabus Updates" headingMr="अभ्यासक्रम अपडेट्स" color="#4f46e5" scroll={false} limit={5} />
         </aside>
 
         <div className="dw-center">
@@ -169,7 +171,7 @@ export default function Home() {
                   </span>
                 </div>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'16px', flexWrap:'wrap', gap:'8px'}}>
-                  {['results','admit-cards','answer-keys'].includes(job.category) ? <span /> : <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>}
+                  {['results','admit-cards','answer-keys','syllabus'].includes(job.category) ? <span /> : <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>}
                   <Link href={`/jobs/${job.id}`} style={{background:'var(--color-ink)', color:'white', padding:'9px 20px', borderRadius:'8px', textDecoration:'none', fontSize:'13px', fontWeight:'600'}}>
                     {t('viewDetails')} →
                   </Link>

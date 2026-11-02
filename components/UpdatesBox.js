@@ -17,7 +17,8 @@ function postedText(iso, mr) {
 }
 
 // category: 'results' | 'admit-cards'
-export default function UpdatesBox({ category, heading, headingMr, color, visibleRows = DEFAULT_VISIBLE_ROWS }) {
+// scroll={false}: plain static list (no animation) showing the latest `limit` posts
+export default function UpdatesBox({ category, heading, headingMr, color, visibleRows = DEFAULT_VISIBLE_ROWS, scroll = true, limit = 5 }) {
   const { lang } = useLanguage()
   const mr = lang === MR
   const [items, setItems] = useState(null)
@@ -30,15 +31,15 @@ export default function UpdatesBox({ category, heading, headingMr, color, visibl
         .eq('is_active', true)
         .eq('category', category)
         .order('created_at', { ascending: false })
-        .limit(COUNT)
+        .limit(scroll ? COUNT : limit)
       if (error) console.error('UpdatesBox', category, error)
       setItems(data || [])
     }
     load()
-  }, [category])
+  }, [category, scroll, limit])
 
   const list = items || []
-  const animate = list.length > visibleRows
+  const animate = scroll && list.length > visibleRows
   const rows = animate ? [...list, ...list] : list
 
   return (

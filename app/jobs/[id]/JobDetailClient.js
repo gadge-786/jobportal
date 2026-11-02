@@ -61,8 +61,9 @@ setExamTests(examData && examData.length > 0 ? examData : null)
     'admit-cards': '#0d9488',
     'results': '#be185d',
     'answer-keys': '#b45309',
+    'syllabus': '#4f46e5',
   }
-  const isUpdatePage = ['results', 'admit-cards', 'answer-keys'].includes(job.category)
+  const isUpdatePage = ['results', 'admit-cards', 'answer-keys', 'syllabus'].includes(job.category)
 
   const categoryColor = categoryColors[job.category] || '#1a56db'
 
@@ -260,7 +261,7 @@ setExamTests(examData && examData.length > 0 ? examData : null)
         <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>
           
           <a href={job.apply_link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:categoryColor, color:'white', padding:'16px 40px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>
-            {job.category === 'results' ? t('viewResult') : job.category === 'answer-keys' ? t('viewAnswerKey') : job.category === 'admit-cards' ? t('downloadAdmitCard') : t('applyNow')}
+            {job.category === 'results' ? t('viewResult') : job.category === 'answer-keys' ? t('viewAnswerKey') : job.category === 'syllabus' ? t('viewSyllabus') : job.category === 'admit-cards' ? t('downloadAdmitCard') : t('applyNow')}
           </a>
           {job.notification_pdf && (
             <a href={job.notification_pdf} target="_blank" rel="noopener noreferrer" style={{display:'inline-block', background:'white', color:categoryColor, border:'2px solid ' + categoryColor, padding:'14px 38px', borderRadius:'12px', textDecoration:'none', fontWeight:'bold', fontSize:'16px'}}>

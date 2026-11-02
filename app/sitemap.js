@@ -6,7 +6,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 )
 
-const NON_OPENINGS = ['results', 'admit-cards', 'answer-keys']
+const NON_OPENINGS = ['results', 'admit-cards', 'answer-keys', 'syllabus']
 
 // Supabase returns at most 1000 rows per request, so read in pages
 async function fetchAllActiveJobs() {

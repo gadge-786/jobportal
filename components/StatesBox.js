@@ -7,7 +7,7 @@ import { stateLabel } from '../lib/states'
 
 const MR = 'mr'
 const COLOR = '#1a56db'
-const NON_OPENINGS = ['results', 'admit-cards', 'answer-keys']
+const NON_OPENINGS = ['results', 'admit-cards', 'answer-keys', 'syllabus']
 const PINNED = 'maharashtra' // always listed first
 
 export default function StatesBox() {

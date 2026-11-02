@@ -79,6 +79,8 @@ def determine_category(title):
         return 'results' 
     if 'answer key' in t:
         return 'answer-keys'
+    if 'syllabus' in t:
+        return 'syllabus'
 
     title_lower = title.lower()
     if any(w in title_lower for w in ['railway', 'rrb', 'ntpc', 'loco pilot', 'station master', 'rpf']):

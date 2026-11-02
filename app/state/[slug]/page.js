@@ -9,7 +9,7 @@ export const revalidate = 3600        // rebuild at most once an hour
 export const dynamicParams = false    // unknown slugs -> 404
 
 const BASE = 'https://dwarsing.in'
-const NON_OPENINGS = ['results', 'admit-cards', 'answer-keys']
+const NON_OPENINGS = ['results', 'admit-cards', 'answer-keys', 'syllabus']
 
 export function generateStaticParams() {
   return [...STATES.map(s => ({ slug: s.slug })), { slug: 'all-india' }]
