@@ -4,6 +4,7 @@ import { AuthProvider } from '../components/AuthProvider'
 import { LanguageProvider } from '../components/LanguageProvider'
 import Navbar from '../components/Navbar'
 import Link from 'next/link'
+import GoogleAnalytics from '../components/GoogleAnalytics'
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['600', '700'], variable: '--font-heading' })
 const workSans = Work_Sans({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-body' })
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${poppins.variable} ${workSans.variable} ${mukta.variable}`}>
       <body>
+        <GoogleAnalytics />
         <AuthProvider>
           <LanguageProvider>
             <Navbar />
