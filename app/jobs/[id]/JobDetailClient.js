@@ -11,6 +11,22 @@ import { stateLabel } from '../../../lib/states'
 import PreviousPapers from '../../../components/PreviousPapers'
 import { normalizeJob } from '../../../lib/normalizeJob'
 
+// Real dates are shown as "24 June 2026". Anything else ("Coming soon", "To Be Announced",
+// Odia/Marathi text...) is shown exactly as written instead of "Invalid Date".
+function formatTimelineDate(value) {
+  if (value === null || value === undefined) return ''
+  const text = String(value).trim()
+  if (!text) return ''
+  const clean = /^\d{4}-\d{1,2}-\d{1,2}([T ].*)?$/.test(text) ||          // 2026-06-24
+                /^\d{1,2}\s+[A-Za-z]+,?\s+\d{4}$/.test(text) ||          // 24 June 2026
+                /^[A-Za-z]+\s+\d{1,2},?\s+\d{4}$/.test(text)            // June 24, 2026
+  const d = new Date(text)
+  if (clean && !isNaN(d.getTime())) {
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+  }
+  return text
+}
+
 export default function JobDetailClient({ id }) {
   const [job, setJob] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -162,7 +178,7 @@ setExamTests(examData && examData.length > 0 ? examData : null)
                       {stage.title}
                     </div>
                     <div style={{fontSize:'12px', color:'#6b7280', marginTop:'2px'}}>
-                      {new Date(stage.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      {formatTimelineDate(stage.date)}
                     </div>
                     {isCompleted && (
                       <span style={{fontSize:'11px', color:categoryColor, fontWeight:'500', marginTop:'2px', display:'inline-block'}}>
