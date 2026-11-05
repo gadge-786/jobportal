@@ -10,6 +10,7 @@ import ChakraLoader from '../../../components/ChakraLoader'
 import { stateLabel } from '../../../lib/states'
 import PreviousPapers from '../../../components/PreviousPapers'
 import { normalizeJob } from '../../../lib/normalizeJob'
+import RichText from '../../../components/RichText'
 
 // Real dates are shown as "24 June 2026". Anything else ("Coming soon", "To Be Announced",
 // Odia/Marathi text...) is shown exactly as written instead of "Invalid Date".
@@ -142,11 +143,11 @@ setExamTests(examData && examData.length > 0 ? examData : null)
 
   <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'14px', padding:'22px', marginBottom:'16px'}}>
   <h2 style={{fontFamily:'var(--font-heading)', fontSize:'16px', fontWeight:'700', color:'var(--color-ink)', marginBottom:'12px'}}>{t('aboutJob')}</h2>
-  <p style={{color:'var(--color-muted)', lineHeight:'1.8', fontSize:'14.5px'}}>{job.description}</p>
+  <RichText text={job.description} accentColor={categoryColor} />
   {lang === 'mr' && job.description_mr && (
-    <p style={{color:'var(--color-muted)', lineHeight:'1.8', fontSize:'14px', marginTop:'10px', fontFamily:'var(--font-marathi)', borderTop:'1px dashed var(--color-border)', paddingTop:'10px'}}>
-      {job.description_mr}
-    </p>
+    <div style={{marginTop:'14px', fontFamily:'var(--font-marathi)', borderTop:'1px dashed var(--color-border)', paddingTop:'14px'}}>
+      <RichText text={job.description_mr} accentColor={categoryColor} fontSize={14} />
+    </div>
   )}
   </div>
 
@@ -200,9 +201,7 @@ setExamTests(examData && examData.length > 0 ? examData : null)
               <h2 style={{fontFamily: 'var(--font-heading)', fontSize: '16px', fontWeight: '700', color: 'var(--color-ink)', marginBottom: '12px'}}>
                 🎓 {t('eligibilityCriteria') || 'Eligibility Criteria'}
               </h2>
-              <p style={{color: 'var(--color-muted)', lineHeight: '1.8', fontSize: '14.5px', whiteSpace: 'pre-line'}}>
-                {job.eligibility_note}
-              </p>
+              <RichText text={job.eligibility_note} accentColor={categoryColor} />
             </div>
           )}
           
@@ -248,7 +247,7 @@ setExamTests(examData && examData.length > 0 ? examData : null)
       {job.exam_pattern_table && Array.isArray(job.exam_pattern_table) && job.exam_pattern_table.length > 0 && (
         <div style={{marginBottom:'16px'}}>
           {job.exam_pattern_note && (
-            <p style={{color:'#4b5563', lineHeight:'1.8', fontSize:'14px', margin:'0 0 14px'}}>{job.exam_pattern_note}</p>
+            <div style={{margin:'0 0 14px'}}><RichText text={job.exam_pattern_note} accentColor={categoryColor} fontSize={14} /></div>
           )}
           {job.exam_pattern_table.map((stage, idx) => (
             <DataTable
