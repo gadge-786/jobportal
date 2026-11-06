@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../../lib/supabase'
 import HowToApply from '../../../components/HowToApply'
-import DataTable from '../../../components/DataTable'
+import DataTable from '../../../components/InfoTable'
 import { useLanguage } from '../../../components/LanguageProvider'
 import JobQA from '../../../components/JobQA'
 import ChakraLoader from '../../../components/ChakraLoader'
@@ -261,16 +261,12 @@ setExamTests(examData && examData.length > 0 ? examData : null)
         </div>
       )}
       <PreviousPapers jobId={job.id} />
+      {!isUpdatePage && <HowToApply job={job} accentColor={categoryColor} />}
       <div style={{background:'var(--color-card)', border:'1px solid var(--color-border)', borderRadius:'14px', padding:'26px', textAlign:'center', marginBottom:'16px'}}>
   {!isUpdatePage && (
-    <>
-      <p style={{color:'var(--color-muted)', fontSize:'13px', marginBottom:'18px'}}>
-        {t('applyWarning')}
-      </p>
-      <div>
-        <HowToApply job={job} accentColor={categoryColor} />
-      </div>
-    </>
+    <p style={{background:'#fffbeb', border:'1px solid #fde68a', color:'#92400e', borderRadius:'10px', padding:'10px 14px', fontSize:'13px', lineHeight:1.6, margin:'0 0 20px'}}>
+      ⚠️ {t('applyWarning')}
+    </p>
   )}
   
         <div style={{display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap'}}>

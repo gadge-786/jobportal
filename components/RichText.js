@@ -3,7 +3,7 @@ import { parseBlocks, parseInline } from '../lib/richTextParse'
 // Readable job text: paragraph gaps, headings, bullet/numbered lists,
 // highlighted **bold**, and clickable links / emails. No HTML is injected.
 
-function Inline({ text, accent }) {
+export function Inline({ text, accent }) {
   return parseInline(text).map((n, i) => {
     if (n.t === 'bold') {
       return (
