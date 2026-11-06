@@ -50,26 +50,29 @@ def parse_ts(value):
     except Exception:
         return None
 
+def norm_url(u):
+    return u.strip().rstrip('/').lower()
+
 def get_existing_jobs():
-    """Titles AND source URLs of every job already stored.
-    Matching on source_url means a job you re-titled by hand (e.g. translated to Odia)
-    is still recognised as existing and is not inserted again."""
-    titles, urls = set(), set()
+    """Titles, source URLs and notification PDFs of every job already stored.
+    A job you re-titled or rewrote by hand is still recognised as existing, because the
+    scraper also compares the source page URL and the notification PDF link, which your
+    edits normally keep. Hand-made jobs (no source_url) are caught by their PDF link."""
+    titles, urls, pdfs = set(), set(), set()
     start, page = 0, 1000
     while True:
-        response = supabase.table('jobs').select('title, source_url').range(start, start + page - 1).execute()
+        response = supabase.table('jobs').select('title, source_url, notification_pdf').range(start, start + page - 1).execute()
         for job in response.data:
             if job.get('title'):
                 titles.add(job['title'].lower())
             if job.get('source_url'):
-                urls.add(job['source_url'].strip().rstrip('/').lower())
+                urls.add(norm_url(job['source_url']))
+            if job.get('notification_pdf'):
+                pdfs.add(norm_url(job['notification_pdf']))
         if len(response.data) < page:
             break
         start += page
-    return titles, urls
-
-def norm_url(u):
-    return u.strip().rstrip('/').lower()
+    return titles, urls, pdfs
 
 def determine_category(title):
     t = title.lower()
@@ -210,7 +213,7 @@ def scrape_freejobalert():
         response = requests.get(url, headers=HEADERS, timeout=15)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
-        existing_titles, existing_urls = get_existing_jobs()
+        existing_titles, existing_urls, existing_pdfs = get_existing_jobs()
         print(f"Existing jobs in database: {len(existing_titles)}")
         jobs_added = 0
 
@@ -238,6 +241,14 @@ def scrape_freejobalert():
 
             fresh = fresh_values(details, detail_url)
 
+            # Same notification PDF as a job we already have (e.g. one you made or renamed by hand)
+            pdf = fresh.get('notification_pdf')
+            if pdf and norm_url(pdf) in existing_pdfs:
+                print(f"- Skipped (already in database under another title, same notification PDF): {title}")
+                existing_titles.add(title.lower())
+                existing_urls.add(norm_url(detail_url))
+                continue
+
             job_data = {
                 'title': title,
                 'company': 'Government of India',
@@ -262,6 +273,8 @@ def scrape_freejobalert():
                 supabase.table('jobs').insert(job_data).execute()
                 existing_titles.add(title.lower())
                 existing_urls.add(norm_url(detail_url))
+                if fresh.get('notification_pdf'):
+                    existing_pdfs.add(norm_url(fresh['notification_pdf']))
                 jobs_added += 1
                 print(f"✓ Added [{category}]: {title}")
                 if jobs_added >= 15:
