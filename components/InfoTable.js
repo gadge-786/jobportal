@@ -8,7 +8,7 @@ import RichText, { Inline } from './RichText'
 
 const cellText = v => (v === null || v === undefined) ? '' : typeof v === 'object' ? JSON.stringify(v) : String(v)
 const NARROW_HEAD = /^(sr\.?\s*no\.?|s\.?\s*no\.?|no\.?|#|क्र\.?.*|अ\.?\s*क्र.*)$/i
-const TOTAL_ROW = /^(total|grand total|एकूण|मोट)/i
+const TOTAL_ROW = /^(total|grand total|एकूण|मोट|कुल)(\s|$)/i
 
 export default function InfoTable({ title, subtitle, accentColor, columns = [], rows = [] }) {
   const accent = accentColor || '#1a56db'

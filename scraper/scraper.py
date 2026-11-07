@@ -31,7 +31,8 @@ SKIP_KEYWORDS = [
     'facebook', 'telegram', 'whatsapp', 'google play', 'app store',
     'advertis', 'sponsor', 'download app', 'follow us', 'subscribe',
     'contact us', 'about us', 'privacy policy', 'disclaimer', 'sitemap',
-    'freejobalert', 'free job alert', 'home page', 'click here'
+    'freejobalert', 'free job alert', 'home page', 'click here',
+    'latest notification', 'sarkari result', 'latest jobs', 'view more', 'read more', 'all jobs'
 ]
 
 JOB_KEYWORDS = [
@@ -59,9 +60,11 @@ def get_existing_jobs():
     scraper also compares the source page URL and the notification PDF link, which your
     edits normally keep. Hand-made jobs (no source_url) are caught by their PDF link."""
     titles, urls, pdfs = set(), set(), set()
+    rows_read = 0
     start, page = 0, 1000
     while True:
         response = supabase.table('jobs').select('title, source_url, notification_pdf').order('id').range(start, start + page - 1).execute()
+        rows_read += len(response.data)
         for job in response.data:
             if job.get('title'):
                 titles.add(job['title'].lower())
@@ -72,7 +75,7 @@ def get_existing_jobs():
         if len(response.data) < page:
             break
         start += page
-    return titles, urls, pdfs
+    return titles, urls, pdfs, rows_read
 
 def determine_category(title):
     t = title.lower()
@@ -104,6 +107,11 @@ def is_real_job(title):
     if any(skip in title_lower for skip in SKIP_KEYWORDS):
         return False
     if len(title) < 15 or len(title) > 150:
+        return False
+    # real posts always carry a year or a number ("... 2026", "(400 Vacancy)"); menu links do not
+    if not any(ch.isdigit() for ch in title):
+        return False
+    if any(ch in title for ch in '→»›'):
         return False
     if not any(kw in title_lower for kw in JOB_KEYWORDS):
         return False
@@ -213,9 +221,10 @@ def scrape_freejobalert():
         response = requests.get(url, headers=HEADERS, timeout=15)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
-        existing_titles, existing_urls, existing_pdfs = get_existing_jobs()
-        print(f"Existing jobs in database: {len(existing_titles)}")
-        if len(existing_titles) < 50:
+        existing_titles, existing_urls, existing_pdfs, rows_read = get_existing_jobs()
+        print(f"SCRAPER VERSION 2026-11-07 (reads all rows, matches title + source_url + PDF, blocks menu links)")
+        print(f"Existing jobs in database: {rows_read} rows read, {len(existing_titles)} distinct titles, {len(existing_urls)} source pages")
+        if rows_read < 50:
             # The database holds many hundreds of jobs. A tiny number means the read failed or was
             # cut short, and carrying on would re-insert old jobs as duplicates.
             print("ABORTING: could not read the existing jobs list properly, nothing was added.")

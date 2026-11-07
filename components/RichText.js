@@ -38,6 +38,41 @@ function ListItem({ text, accent }) {
   return <li><Inline text={text} accent={accent} /></li>
 }
 
+const TOTAL = /^(\*\*)?(total|grand total|एकूण|मोट|कुल)(\*\*)?$/i
+
+function MdTable({ b, accent }) {
+  const cell = { padding:'9px 12px', borderBottom:'1px solid var(--color-border)', verticalAlign:'top', lineHeight:1.55 }
+  return (
+    <div className="dw-rt-table" style={{overflowX:'auto', margin:'4px 0 18px', border:'1px solid var(--color-border)', borderRadius:'10px'}}>
+      <table style={{width:'100%', borderCollapse:'collapse', fontSize:'0.93em', minWidth: b.header && b.header.length > 3 ? '460px' : undefined}}>
+        {b.header && (
+          <thead>
+            <tr>{b.header.map((h, i) => (
+              <th key={i} style={{...cell, textAlign:b.align[i], background:`${accent}14`, color:'var(--color-ink)', fontWeight:700, borderBottom:`2px solid ${accent}55`, whiteSpace:'normal'}}>
+                <Inline text={h} accent={accent} />
+              </th>))}
+            </tr>
+          </thead>
+        )}
+        <tbody>
+          {b.rows.map((r, ri) => {
+            const first = (r.find(c => c.trim()) || '').trim()
+            const total = TOTAL.test(first)
+            return (
+              <tr key={ri} style={{background: total ? `${accent}10` : (ri % 2 ? 'rgba(0,0,0,.02)' : 'transparent')}}>
+                {r.map((c, ci) => (
+                  <td key={ci} style={{...cell, textAlign:b.align[ci], fontWeight: total || ci === 0 ? 600 : 400, color: ci === 0 || total ? 'var(--color-ink)' : undefined, borderTop: total ? `2px solid ${accent}55` : undefined, wordBreak:'break-word'}}>
+                    <Inline text={c} accent={accent} />
+                  </td>))}
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 export default function RichText({ text, accentColor, fontSize = 14.5, style }) {
   const accent = accentColor || '#1a56db'
   const blocks = parseBlocks(text)
@@ -68,6 +103,7 @@ export default function RichText({ text, accentColor, fontSize = 14.5, style }) 
             }}><Inline text={b.text} accent={accent} /></h3>
           )
         }
+        if (b.type === 'table') return <MdTable key={i} b={b} accent={accent} />
         if (b.type === 'hr') return <hr key={i} style={{border:'none', borderTop:'1px solid var(--color-border)', margin:'16px 0'}} />
         if (b.type === 'ul') return <ul key={i}>{b.items.map((it, j) => <ListItem key={j} text={it} accent={accent} />)}</ul>
         if (b.type === 'ol') return <ol key={i}>{b.items.map((it, j) => <li key={j}><Inline text={it} accent={accent} /></li>)}</ol>
