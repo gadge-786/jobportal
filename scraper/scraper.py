@@ -61,7 +61,7 @@ def get_existing_jobs():
     titles, urls, pdfs = set(), set(), set()
     start, page = 0, 1000
     while True:
-        response = supabase.table('jobs').select('title, source_url, notification_pdf').range(start, start + page - 1).execute()
+        response = supabase.table('jobs').select('title, source_url, notification_pdf').order('id').range(start, start + page - 1).execute()
         for job in response.data:
             if job.get('title'):
                 titles.add(job['title'].lower())
@@ -215,6 +215,11 @@ def scrape_freejobalert():
         soup = BeautifulSoup(response.content, 'html.parser')
         existing_titles, existing_urls, existing_pdfs = get_existing_jobs()
         print(f"Existing jobs in database: {len(existing_titles)}")
+        if len(existing_titles) < 50:
+            # The database holds many hundreds of jobs. A tiny number means the read failed or was
+            # cut short, and carrying on would re-insert old jobs as duplicates.
+            print("ABORTING: could not read the existing jobs list properly, nothing was added.")
+            return
         jobs_added = 0
 
         for link in soup.find_all('a', href=True):
