@@ -1,9 +1,11 @@
 'use client'
 import Link from 'next/link'
 import { useLanguage } from './LanguageProvider'
+import { useSavedJobs } from './SavedJobsProvider'
 
 export default function Navbar() {
   const { lang, switchLanguage, t } = useLanguage()
+  const { count } = useSavedJobs()
 
   return (
     <nav style={{
@@ -27,6 +29,10 @@ export default function Navbar() {
         <Link href="/jobs?category=government" style={{color:'#C7CBE8', textDecoration:'none', fontSize:'14px', fontWeight:'500'}}>{t('govtJobs')}</Link>
         <Link href="/jobs?category=banking" style={{color:'#C7CBE8', textDecoration:'none', fontSize:'14px', fontWeight:'500'}}>{t('banking')}</Link>
         <Link href="/jobs?category=railway" style={{color:'#C7CBE8', textDecoration:'none', fontSize:'14px', fontWeight:'500'}}>{t('railway')}</Link>
+        <Link href="/saved" style={{color:'#C7CBE8', textDecoration:'none', fontSize:'14px', fontWeight:'500', display:'inline-flex', alignItems:'center', gap:'6px'}}>
+          <span style={{color:'#fda4af'}}>♥</span>{t('savedJobsNav')}
+          {count > 0 && <span style={{background:'var(--color-amber)', color:'var(--color-ink)', borderRadius:'10px', padding:'1px 7px', fontSize:'11px', fontWeight:'700'}}>{count}</span>}
+        </Link>
 
         <div style={{display:'flex', background:'rgba(255,255,255,0.1)', borderRadius:'20px', padding:'3px'}}>
           <button

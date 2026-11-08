@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 import { useLanguage } from '../../components/LanguageProvider'
 import ChakraLoader from '../../components/ChakraLoader'
+import SaveButton from '../../components/SaveButton'
 import { stateLabel } from '../../lib/states'
 
 const categories = [
@@ -161,8 +162,11 @@ export default function AllJobs({ searchParams }) {
                     <p style={{color:'var(--color-muted)', fontSize:'14px', margin:'2px 0'}}>🏢 {job.company}</p>
                     <p style={{color:'var(--color-muted)', fontSize:'13px', margin:'2px 0'}}>📍 {job.location} &nbsp;|&nbsp; 💰 {job.salary}</p>
                   </div>
-                  <span style={{background:`${catColor}15`, color:catColor, fontSize:'12px', padding:'4px 12px', borderRadius:'20px', fontWeight:'600', whiteSpace:'nowrap'}}>
-                    {job.category}
+                  <span style={{display:'flex', alignItems:'center', gap:'8px'}}>
+                    <span style={{background:`${catColor}15`, color:catColor, fontSize:'12px', padding:'4px 12px', borderRadius:'20px', fontWeight:'600', whiteSpace:'nowrap'}}>
+                      {job.category}
+                    </span>
+                    <SaveButton jobId={job.id} />
                   </span>
                 </div>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'16px', flexWrap:'wrap', gap:'8px'}}>

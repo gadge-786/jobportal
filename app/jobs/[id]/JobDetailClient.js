@@ -5,6 +5,7 @@ import { supabase } from '../../../lib/supabase'
 import HowToApply from '../../../components/HowToApply'
 import DataTable from '../../../components/InfoTable'
 import { useLanguage } from '../../../components/LanguageProvider'
+import SaveButton from '../../../components/SaveButton'
 import JobQA from '../../../components/JobQA'
 import ChakraLoader from '../../../components/ChakraLoader'
 import { stateLabel } from '../../../lib/states'
@@ -120,6 +121,7 @@ setExamTests(examData && examData.length > 0 ? examData : null)
         {lang === 'mr' && job.title_mr ? job.title_mr : job.title}
       </h1>
       <p style={{fontSize:'15px', opacity:0.92, margin:'0', position:'relative'}}>{t('company')}: {job.company}</p>
+      <div style={{marginTop:'12px', position:'relative'}}><SaveButton jobId={job.id} variant="pill" /></div>
       {job.state && (
         <Link href={`/state/${job.state}`} style={{display:'inline-block', marginTop:'10px', position:'relative', background:'rgba(255,255,255,0.18)', color:'white', padding:'4px 12px', borderRadius:'20px', fontSize:'12.5px', fontWeight:'600', textDecoration:'none'}}>
           📍 {stateLabel(job.state, lang === 'mr')} →

@@ -1,6 +1,7 @@
 import './globals.css'
 import { Poppins, Work_Sans, Mukta } from 'next/font/google'
 import { AuthProvider } from '../components/AuthProvider'
+import { SavedJobsProvider } from '../components/SavedJobsProvider'
 import { LanguageProvider } from '../components/LanguageProvider'
 import Navbar from '../components/Navbar'
 import Link from 'next/link'
@@ -32,17 +33,19 @@ export default function RootLayout({ children }) {
         <GoogleAnalytics />
         <AuthProvider>
           <LanguageProvider>
-            <Navbar />
-            <main style={{minHeight:'80vh', background:'var(--color-paper)'}}>
-              {children}
-            </main>
-            <footer style={{background:'var(--color-ink)', color:'#B8BCD9', textAlign:'center', padding:'28px 20px', fontSize:'13px'}}>
-              <div style={{marginBottom:'12px'}}>
-                <Link href="/privacy-policy" style={{color:'#B8BCD9', textDecoration:'none', margin:'0 12px'}}>Privacy Policy</Link>
-                <Link href="/contact" style={{color:'#B8BCD9', textDecoration:'none', margin:'0 12px'}}>Contact Us</Link>
-              </div>
-              © 2026 DwarSing. All rights reserved. | Latest Govt & Private Jobs
-            </footer>
+            <SavedJobsProvider>
+              <Navbar />
+              <main style={{minHeight:'80vh', background:'var(--color-paper)'}}>
+                {children}
+              </main>
+              <footer style={{background:'var(--color-ink)', color:'#B8BCD9', textAlign:'center', padding:'28px 20px', fontSize:'13px'}}>
+                <div style={{marginBottom:'12px'}}>
+                  <Link href="/privacy-policy" style={{color:'#B8BCD9', textDecoration:'none', margin:'0 12px'}}>Privacy Policy</Link>
+                  <Link href="/contact" style={{color:'#B8BCD9', textDecoration:'none', margin:'0 12px'}}>Contact Us</Link>
+                </div>
+                © 2026 DwarSing. All rights reserved. | Latest Govt & Private Jobs
+              </footer>
+            </SavedJobsProvider>
           </LanguageProvider>
         </AuthProvider>
       </body>
