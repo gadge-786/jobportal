@@ -36,8 +36,8 @@ export default function SavedPage() {
       const ids = (saved || []).map(r => r.job_id)
       if (!ids.length) { if (!cancelled) setRows([]); return }
       const { data: jobs, error: e2 } = await supabase.from('jobs')
-        .select('id, title, title_mr, company, location, salary, category, last_date, is_active').in('id', ids)
-      if (e2) console.error('[saved page] jobs query failed:', e2)
+        .select('*').in('id', ids)
+      if (e2) console.error('[saved page] jobs query failed:', e2.code, e2.message, e2.details, e2.hint)
       const byId = new Map((jobs || []).map(j => [j.id, j]))
       if (!cancelled) setRows(ids.map(id => ({ job_id: id, jobs: byId.get(id) || null })))
     }
