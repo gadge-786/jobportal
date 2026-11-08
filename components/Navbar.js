@@ -2,10 +2,14 @@
 import Link from 'next/link'
 import { useLanguage } from './LanguageProvider'
 import { useSavedJobs } from './SavedJobsProvider'
+import { useAuth } from './AuthProvider'
 
 export default function Navbar() {
   const { lang, switchLanguage, t } = useLanguage()
   const { count } = useSavedJobs()
+  const { user, loading, signInWithGoogle, signOut } = useAuth()
+  const name = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || ''
+  const avatar = user?.user_metadata?.avatar_url || user?.user_metadata?.picture
 
   return (
     <nav style={{
@@ -57,6 +61,19 @@ export default function Navbar() {
             मराठी
           </button>
         </div>
+
+        {!loading && (user ? (
+          <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+            {avatar
+              // eslint-disable-next-line @next/next/no-img-element
+              ? <img src={avatar} alt="" width={28} height={28} referrerPolicy="no-referrer" style={{borderRadius:'50%', border:'2px solid var(--color-amber)'}} />
+              : <span style={{width:'28px', height:'28px', borderRadius:'50%', background:'var(--color-amber)', color:'var(--color-ink)', display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:'13px', fontWeight:'700'}}>{(name[0] || '?').toUpperCase()}</span>}
+            <span title={name} style={{color:'#C7CBE8', fontSize:'13px', maxWidth:'110px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{name.split(' ')[0]}</span>
+            <button onClick={signOut} style={{background:'transparent', color:'#C7CBE8', border:'1px solid rgba(255,255,255,0.3)', borderRadius:'16px', padding:'5px 12px', fontSize:'12px', fontWeight:'600', cursor:'pointer'}}>{t('signOut')}</button>
+          </div>
+        ) : (
+          <button onClick={signInWithGoogle} style={{background:'var(--color-amber)', color:'var(--color-ink)', border:'none', borderRadius:'16px', padding:'6px 16px', fontSize:'13px', fontWeight:'700', cursor:'pointer'}}>{t('signIn')}</button>
+        ))}
       </div>
     </nav>
   )

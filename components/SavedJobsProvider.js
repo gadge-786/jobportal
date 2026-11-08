@@ -22,7 +22,8 @@ export function SavedJobsProvider({ children }) {
       let pending = null
       try { pending = sessionStorage.getItem(PENDING_KEY); sessionStorage.removeItem(PENDING_KEY) } catch {}
       if (pending) {
-        await supabase.from('saved_jobs').upsert({ user_id: userId, job_id: pending }, { onConflict: 'user_id,job_id', ignoreDuplicates: true })
+        const r = await supabase.from('saved_jobs').insert({ user_id: userId, job_id: pending })
+        if (r.error && r.error.code !== '23505') console.error('[saved_jobs] pending save failed:', r.error)
       }
       const { data, error } = await supabase.from('saved_jobs').select('job_id').eq('user_id', userId)
       if (cancelled) return
@@ -47,11 +48,13 @@ export function SavedJobsProvider({ children }) {
     setSavedIds(prev => { const n = new Set(prev); wasSaved ? n.delete(jobId) : n.add(jobId); return n })
     const { error } = wasSaved
       ? await supabase.from('saved_jobs').delete().eq('user_id', userId).eq('job_id', jobId)
-      : await supabase.from('saved_jobs').upsert({ user_id: userId, job_id: jobId }, { onConflict: 'user_id,job_id', ignoreDuplicates: true })
+      : await supabase.from('saved_jobs').insert({ user_id: userId, job_id: jobId })
     busy.current.delete(jobId)
-    if (error) {
+    // 23505 = already saved -> fine
+    if (error && error.code !== '23505') {
+      console.error('[saved_jobs] save/unsave failed:', error)
       setSavedIds(prev => { const n = new Set(prev); wasSaved ? n.add(jobId) : n.delete(jobId); return n })
-      return { ok: false, error }
+      return { ok: false, error: { code: error.code, message: error.message } }
     }
     return { ok: true, saved: !wasSaved }
   }, [userId, savedIds, signInWithGoogle])
