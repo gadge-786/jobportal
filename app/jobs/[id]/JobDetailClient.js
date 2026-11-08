@@ -5,6 +5,7 @@ import { supabase } from '../../../lib/supabase'
 import HowToApply from '../../../components/HowToApply'
 import DataTable from '../../../components/InfoTable'
 import { useLanguage } from '../../../components/LanguageProvider'
+import TelegramJoin from '../../../components/TelegramJoin'
 import SaveButton from '../../../components/SaveButton'
 import JobQA from '../../../components/JobQA'
 import ChakraLoader from '../../../components/ChakraLoader'
@@ -293,6 +294,8 @@ setExamTests(examData && examData.length > 0 ? examData : null)
           </Link>
         </div>
       </div>
+
+      <TelegramJoin jobId={job.id} />
 
       <JobQA jobId={job.id} />
 
