@@ -28,10 +28,20 @@ export default function SavedPage() {
   useEffect(() => {
     if (!user) { setRows(null); return }
     let cancelled = false
-    supabase.from('saved_jobs')
-      .select('created_at, job_id, jobs(id, title, title_mr, company, location, salary, category, last_date, is_active)')
-      .eq('user_id', user.id).order('created_at', { ascending: false })
-      .then(({ data }) => { if (!cancelled) setRows(data || []) })
+    async function load() {
+      // two plain queries instead of a joined select (does not depend on PostgREST relationship cache)
+      const { data: saved, error: e1 } = await supabase.from('saved_jobs')
+        .select('job_id, created_at').eq('user_id', user.id).order('created_at', { ascending: false })
+      if (e1) { console.error('[saved page] saved_jobs query failed:', e1); if (!cancelled) setRows([]); return }
+      const ids = (saved || []).map(r => r.job_id)
+      if (!ids.length) { if (!cancelled) setRows([]); return }
+      const { data: jobs, error: e2 } = await supabase.from('jobs')
+        .select('id, title, title_mr, company, location, salary, category, last_date, is_active').in('id', ids)
+      if (e2) console.error('[saved page] jobs query failed:', e2)
+      const byId = new Map((jobs || []).map(j => [j.id, j]))
+      if (!cancelled) setRows(ids.map(id => ({ job_id: id, jobs: byId.get(id) || null })))
+    }
+    load()
     return () => { cancelled = true }
   }, [user, savedIds])
 
