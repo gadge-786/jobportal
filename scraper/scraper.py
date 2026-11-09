@@ -54,16 +54,75 @@ def parse_ts(value):
 def norm_url(u):
     return u.strip().rstrip('/').lower()
 
+# ---- same-job detection by official apply link -------------------------------------------
+STOP_WORDS = {
+    'online', 'form', 'apply', 'posts', 'post', 'vacancy', 'vacancies', 'recruitment', 'various',
+    'notification', 'out', 'soon', 'result', 'results', 'admit', 'card', 'cards', 'answer', 'key',
+    'syllabus', 'and', 'the', 'for', 'more', 'new', 'latest', 'of', 'in', 'at', 'to', 'exam', 'date',
+    'merit', 'list', 'final', 'with', 'last', 'extended', 'released', 'check', 'download',
+}
+
+def _clean(title):
+    t = (title or '').lower()
+    return re.sub(r'(?<=\d),(?=\d)', '', t)          # 2,861 -> 2861
+
+def core_words(title):
+    return {w for w in re.findall(r'[a-z]{2,}', _clean(title)) if w not in STOP_WORDS}
+
+def key_numbers(title):
+    """Identifying numbers: vacancy counts (2+ digits, not a year) and ordinals like 71st"""
+    t = _clean(title)
+    nums = {n for n in re.findall(r'\b\d{2,}\b', t) if not (2020 <= int(n) <= 2035)}
+    nums |= set(re.findall(r'\b\d+(?:st|nd|rd|th)\b', t))
+    return nums
+
+def is_latin(title):
+    letters = [c for c in (title or '') if c.isalpha()]
+    if not letters:
+        return False
+    return sum(1 for c in letters if ord(c) < 128) / len(letters) >= 0.7
+
+def is_specific_link(u):
+    """A link that points at one particular notification page, not just a site's home page."""
+    m = re.match(r'https?://[^/]+(/[^?#]*)?(\?[^#]*)?', u.strip().lower())
+    if not m:
+        return False
+    path, query = (m.group(1) or '').strip('/'), m.group(2) or ''
+    return len(path) >= 12 or bool(query)
+
+def same_job_by_link(title, category, apply_link, links):
+    """True if an existing job has the same official apply link AND looks like the same job.
+    Same link alone is not enough (one organisation uses one careers page for many jobs):
+      - existing title in English  -> needs shared key words or the same vacancy number
+      - existing title rewritten in another language -> needs the same category and a specific link"""
+    if not apply_link or 'freejobalert.com' in apply_link.lower():
+        return None
+    for ex in links.get(norm_url(apply_link), []):
+        if ex['category'] and category and ex['category'] != category:
+            continue
+        if is_latin(ex['title']):
+            a, b = core_words(title), core_words(ex['title'])
+            na, nb = key_numbers(title), key_numbers(ex['title'])
+            if na and nb and not (na & nb):
+                continue                      # different vacancy count / edition -> a different job
+            overlap = len(a & b) / max(1, len(a | b))
+            if overlap >= 0.4 or (na & nb):
+                return ex['title']
+        elif is_specific_link(apply_link):
+            return ex['title'] or '(translated title)'
+    return None
+
 def get_existing_jobs():
     """Titles, source URLs and notification PDFs of every job already stored.
     A job you re-titled or rewrote by hand is still recognised as existing, because the
     scraper also compares the source page URL and the notification PDF link, which your
     edits normally keep. Hand-made jobs (no source_url) are caught by their PDF link."""
     titles, urls, pdfs = set(), set(), set()
+    links = {}
     rows_read = 0
     start, page = 0, 1000
     while True:
-        response = supabase.table('jobs').select('title, source_url, notification_pdf').order('id').range(start, start + page - 1).execute()
+        response = supabase.table('jobs').select('title, source_url, notification_pdf, apply_link, category').order('id').range(start, start + page - 1).execute()
         rows_read += len(response.data)
         for job in response.data:
             if job.get('title'):
@@ -72,10 +131,12 @@ def get_existing_jobs():
                 urls.add(norm_url(job['source_url']))
             if job.get('notification_pdf'):
                 pdfs.add(norm_url(job['notification_pdf']))
+            if job.get('apply_link'):
+                links.setdefault(norm_url(job['apply_link']), []).append({'title': job.get('title') or '', 'category': job.get('category')})
         if len(response.data) < page:
             break
         start += page
-    return titles, urls, pdfs, rows_read
+    return titles, urls, pdfs, links, rows_read
 
 def determine_category(title):
     t = title.lower()
@@ -221,8 +282,8 @@ def scrape_freejobalert():
         response = requests.get(url, headers=HEADERS, timeout=15)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
-        existing_titles, existing_urls, existing_pdfs, rows_read = get_existing_jobs()
-        print(f"SCRAPER VERSION 2026-11-07 (reads all rows, matches title + source_url + PDF, blocks menu links)")
+        existing_titles, existing_urls, existing_pdfs, existing_links, rows_read = get_existing_jobs()
+        print(f"SCRAPER VERSION 2026-11-09 (matches title + source_url + PDF + official apply link, blocks menu links)")
         print(f"Existing jobs in database: {rows_read} rows read, {len(existing_titles)} distinct titles, {len(existing_urls)} source pages")
         if rows_read < 50:
             # The database holds many hundreds of jobs. A tiny number means the read failed or was
@@ -263,6 +324,14 @@ def scrape_freejobalert():
                 existing_urls.add(norm_url(detail_url))
                 continue
 
+            # Same official apply link and clearly the same job as one we already have
+            dup_of = same_job_by_link(title, category, fresh.get('apply_link'), existing_links)
+            if dup_of:
+                print(f"- Skipped (same official apply link as existing job '{dup_of[:70]}'): {title}")
+                existing_titles.add(title.lower())
+                existing_urls.add(norm_url(detail_url))
+                continue
+
             job_data = {
                 'title': title,
                 'company': 'Government of India',
@@ -289,6 +358,8 @@ def scrape_freejobalert():
                 existing_urls.add(norm_url(detail_url))
                 if fresh.get('notification_pdf'):
                     existing_pdfs.add(norm_url(fresh['notification_pdf']))
+                if fresh.get('apply_link'):
+                    existing_links.setdefault(norm_url(fresh['apply_link']), []).append({'title': title, 'category': category})
                 jobs_added += 1
                 print(f"✓ Added [{category}]: {title}")
                 if jobs_added >= 15:
