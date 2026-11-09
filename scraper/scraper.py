@@ -106,7 +106,8 @@ def same_job_by_link(title, category, apply_link, links):
             if na and nb and not (na & nb):
                 continue                      # different vacancy count / edition -> a different job
             overlap = len(a & b) / max(1, len(a | b))
-            if overlap >= 0.4 or (na & nb):
+            contained = len(a & b) / max(1, min(len(a), len(b)))   # short title inside a longer rewritten one
+            if overlap >= 0.4 or (contained >= 0.8 and len(a & b) >= 2) or (na & nb):
                 return ex['title']
         elif is_specific_link(apply_link):
             return ex['title'] or '(translated title)'
