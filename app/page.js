@@ -7,6 +7,7 @@ import ChakraLoader from '../components/ChakraLoader'
 import SaveButton from '../components/SaveButton'
 import UpdatesBox from '../components/UpdatesBox'
 import StatesBox from '../components/StatesBox'
+import EligibilityBox from '../components/EligibilityBox'
 
 export default function Home() {
   const { t, lang } = useLanguage()
@@ -189,6 +190,7 @@ export default function Home() {
         <aside className="dw-right" style={{display:'flex', flexDirection:'column', gap:'16px'}}>
           <UpdatesBox category="admit-cards" heading="Admit Card Updates" headingMr="प्रवेशपत्र अपडेट्स" color="#0d9488" />
           <StatesBox />
+          <EligibilityBox />
         </aside>
 
       </div>
