@@ -121,9 +121,11 @@ def get_existing_jobs():
     titles, urls, pdfs = set(), set(), set()
     links = {}
     rows_read = 0
-    start, page = 0, 1000
+    start, page = 0, 500
     while True:
         response = supabase.table('jobs').select('title, source_url, notification_pdf, apply_link, category').order('id').range(start, start + page - 1).execute()
+        if not response.data:
+            break                      # only an EMPTY page means we are done (the server may cap a page below 1000)
         rows_read += len(response.data)
         for job in response.data:
             if job.get('title'):
@@ -134,9 +136,7 @@ def get_existing_jobs():
                 pdfs.add(norm_url(job['notification_pdf']))
             if job.get('apply_link'):
                 links.setdefault(norm_url(job['apply_link']), []).append({'title': job.get('title') or '', 'category': job.get('category')})
-        if len(response.data) < page:
-            break
-        start += page
+        start += len(response.data)    # advance by what we actually received, not by the requested size
     return titles, urls, pdfs, links, rows_read
 
 def determine_category(title):
@@ -284,7 +284,7 @@ def scrape_freejobalert():
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
         existing_titles, existing_urls, existing_pdfs, existing_links, rows_read = get_existing_jobs()
-        print(f"SCRAPER VERSION 2026-11-09 (matches title + source_url + PDF + official apply link, blocks menu links)")
+        print(f"SCRAPER VERSION 2026-11-09b (reads EVERY row even if the server caps pages, matches title + source_url + PDF + apply link)")
         print(f"Existing jobs in database: {rows_read} rows read, {len(existing_titles)} distinct titles, {len(existing_urls)} source pages")
         if rows_read < 50:
             # The database holds many hundreds of jobs. A tiny number means the read failed or was
