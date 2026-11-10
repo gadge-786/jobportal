@@ -3,6 +3,14 @@ import { parseBlocks, parseInline } from '../lib/richTextParse'
 // Readable job text: paragraph gaps, headings, bullet/numbered lists,
 // highlighted **bold**, and clickable links / emails. No HTML is injected.
 
+const BADGE_COLORS = {
+  green: { bg: '#dcfce7', fg: '#166534', bd: '#86efac' },
+  red:   { bg: '#fee2e2', fg: '#991b1b', bd: '#fca5a5' },
+  amber: { bg: '#fef3c7', fg: '#92400e', bd: '#fcd34d' },
+  blue:  { bg: '#dbeafe', fg: '#1e40af', bd: '#93c5fd' },
+  gray:  { bg: '#f1f5f9', fg: '#334155', bd: '#cbd5e1' },
+}
+
 export function Inline({ text, accent }) {
   return parseInline(text).map((n, i) => {
     if (n.t === 'bold') {
@@ -10,6 +18,14 @@ export function Inline({ text, accent }) {
         <strong key={i} style={{fontWeight:700, color:'var(--color-ink)', background:`${accent}1f`, padding:'0 4px', borderRadius:'4px'}}>
           <Inline text={n.v} accent={accent} />
         </strong>
+      )
+    }
+    if (n.t === 'badge') {
+      const c = BADGE_COLORS[n.color] || BADGE_COLORS.green
+      return (
+        <span key={i} style={{display:'inline-block', background:c.bg, color:c.fg, border:`1px solid ${c.bd}`, fontWeight:700, fontSize:'0.9em', padding:'3px 12px', borderRadius:'20px', lineHeight:1.5}}>
+          {n.v}
+        </span>
       )
     }
     if (n.t === 'link') {
