@@ -90,7 +90,7 @@ export default function AllJobs({ searchParams }) {
               onChange={e => setSearch(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSearch()}
               placeholder={t('searchPlaceholder')}
-              style={{flex:1, padding:'12px 16px', borderRadius:'10px', border:'none', fontSize:'14px', fontFamily:'var(--font-body)'}}
+              style={{flex:1, padding:'12px 16px', borderRadius:'10px', border:'none', fontSize:'14px', fontFamily:'var(--font-body)', background:'white', color:'var(--color-ink)'}}
             />
             <button onClick={handleSearch}
               style={{padding:'12px 24px', background:'var(--color-amber)', color:'var(--color-ink)', border:'none', borderRadius:'10px', cursor:'pointer', fontWeight:'700', fontSize:'14px'}}>

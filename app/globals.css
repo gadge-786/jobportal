@@ -31,6 +31,20 @@ h1, h2, h3 {
   font-family: var(--font-heading), var(--font-marathi), sans-serif;
 }
 
+/* Form fields always get a readable background and text colour (Tailwind's reset makes them
+   transparent, which made the hero search box vanish on the navy background).
+   Inline styles on a field still win over these defaults. */
+input, select, textarea {
+  background-color: var(--color-card);
+  color: var(--color-ink);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
 /* keyboard users can see where they are */
 a:focus-visible,
 button:focus-visible,

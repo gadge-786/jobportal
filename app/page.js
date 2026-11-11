@@ -90,7 +90,7 @@ export default function Home() {
               onChange={e => setSearch(e.target.value)}
               onKeyDown={e => e.key==='Enter' && handleSearch()}
               placeholder={t('searchPlaceholder')}
-              style={{flex:1, padding:'14px 18px', borderRadius:'10px', border:'none', fontSize:'15px', fontFamily:'var(--font-body)'}}
+              style={{flex:1, padding:'14px 18px', borderRadius:'10px', border:'none', fontSize:'15px', fontFamily:'var(--font-body)', background:'white', color:'var(--color-ink)'}}
             />
             <button onClick={handleSearch} style={{padding:'14px 26px', background:'var(--color-amber)', color:'var(--color-ink)', border:'none', borderRadius:'10px', fontWeight:'700', cursor:'pointer', fontSize:'15px'}}>
               {t('search')}
