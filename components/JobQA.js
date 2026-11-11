@@ -2,6 +2,9 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useLanguage } from './LanguageProvider'
+import { checkQuestion, waitSeconds, QA_MAX_NAME, QA_MAX_QUESTION } from '../lib/qaGuard'
+
+const LAST_KEY = 'dw_qa_last_post'
 
 export default function JobQA({ jobId }) {
   const { t } = useLanguage()
@@ -11,6 +14,7 @@ export default function JobQA({ jobId }) {
   const [question, setQuestion] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     async function fetchQuestions() {
@@ -27,9 +31,20 @@ export default function JobQA({ jobId }) {
   }, [jobId])
 
   async function handleSubmit() {
-    if (!question.trim()) return
+    setError('')
+    const check = checkQuestion(name, question)
+    if (!check.ok) {
+      if (check.reason === 'links') setError(t('qaNoLinks'))
+      else if (check.reason === 'long') setError(t('qaTooLong'))
+      return
+    }
+    let last = null
+    try { last = localStorage.getItem(LAST_KEY) } catch {}
+    const wait = waitSeconds(last)
+    if (wait > 0) { setError(`${t('qaWait')} (${wait}s)`); return }
+
     setSubmitting(true)
-    const { data, error } = await supabase
+    const { data, error: insertError } = await supabase
       .from('job_questions')
       .insert({
         job_id: jobId,
@@ -39,12 +54,16 @@ export default function JobQA({ jobId }) {
       .select()
       .single()
 
-    if (!error && data) {
+    if (!insertError && data) {
+      try { localStorage.setItem(LAST_KEY, String(Date.now())) } catch {}
       setSubmitted(true)
       setQuestion('')
       setName('')
       setQuestions(prev => [data, ...prev])
       setTimeout(() => setSubmitted(false), 4000)
+    } else {
+      console.error('[job_questions] insert failed:', insertError)
+      setError(t('qaError'))
     }
     setSubmitting(false)
   }
@@ -58,12 +77,14 @@ export default function JobQA({ jobId }) {
         <input
           value={name}
           onChange={e => setName(e.target.value)}
+          maxLength={QA_MAX_NAME}
           placeholder={t('yourName')}
           style={{width:'100%', padding:'10px 14px', borderRadius:'8px', border:'1px solid var(--color-border)', fontSize:'14px', marginBottom:'10px', boxSizing:'border-box', color:'var(--color-ink)', background:'white', fontFamily:'var(--font-body)'}}
         />
         <textarea
           value={question}
           onChange={e => setQuestion(e.target.value)}
+          maxLength={QA_MAX_QUESTION}
           placeholder={t('yourQuestion')}
           rows={3}
           style={{width:'100%', padding:'10px 14px', borderRadius:'8px', border:'1px solid var(--color-border)', fontSize:'14px', marginBottom:'10px', boxSizing:'border-box', fontFamily:'var(--font-body)', resize:'vertical', color:'var(--color-ink)', background:'white'}}
@@ -80,6 +101,9 @@ export default function JobQA({ jobId }) {
         >
           {submitting ? t('submitting') : t('submitQuestion')}
         </button>
+        {error && (
+          <p role="alert" style={{color:'var(--color-danger)', fontSize:'13px', marginTop:'10px', marginBottom:0}}>{error}</p>
+        )}
         {submitted && (
           <p style={{color:'var(--color-success)', fontSize:'13px', marginTop:'10px', marginBottom:0}}>✓ {t('questionSubmitted')}</p>
         )}
@@ -92,7 +116,7 @@ export default function JobQA({ jobId }) {
           {questions.map((q) => (
             <div key={q.id} style={{borderLeft:'3px solid var(--color-amber)', paddingLeft:'14px'}}>
               <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:'8px'}}>
-                <p style={{fontSize:'14px', color:'var(--color-ink)', fontWeight:'600', margin:0}}>
+                <p style={{fontSize:'14px', color:'var(--color-ink)', fontWeight:'600', margin:0, overflowWrap:'anywhere'}}>
                   {q.asker_name}: {q.question}
                 </p>
                 <span style={{
