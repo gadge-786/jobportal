@@ -1,15 +1,27 @@
 'use client'
 import { useLanguage } from './LanguageProvider'
+import { pickTelegramGroup } from '../lib/telegramGroups'
+import { stateLabel } from '../lib/states'
 
-// Set NEXT_PUBLIC_TELEGRAM_URL in Vercel (e.g. https://t.me/yourchannel). Renders nothing until it is set.
-const TELEGRAM_URL = process.env.NEXT_PUBLIC_TELEGRAM_URL
+// Main channel: set NEXT_PUBLIC_TELEGRAM_URL in Vercel (e.g. https://t.me/yourchannel).
+// State groups: lib/telegramGroups.js
+const DEFAULT_URL = process.env.NEXT_PUBLIC_TELEGRAM_URL || ''
 
-export default function TelegramJoin({ jobId }) {
-  const { t } = useLanguage()
-  if (!TELEGRAM_URL) return null
+export default function TelegramJoin({ jobId, state }) {
+  const { t, lang } = useLanguage()
+  const group = pickTelegramGroup(state, DEFAULT_URL)
+  if (!group) return null
+
+  const name = group.state ? stateLabel(group.state, lang === 'mr') : ''
+  const title = group.state ? t('telegramStateTitle').replace('{state}', name) : t('telegramTitle')
+  const sub = group.state ? t('telegramStateSub').replace('{state}', name) : t('telegramSub')
 
   function track() {
-    try { if (typeof window !== 'undefined' && window.gtag) window.gtag('event', 'join_telegram', { source: 'job_page', job_id: jobId }) } catch {}
+    try {
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'join_telegram', { source: 'job_page', job_id: jobId, group: group.state || 'main' })
+      }
+    } catch {}
   }
 
   return (
@@ -18,11 +30,11 @@ export default function TelegramJoin({ jobId }) {
       <div style={{display:'flex', alignItems:'center', gap:'12px', minWidth:0, flex:'1 1 240px'}}>
         <span aria-hidden="true" style={{width:'42px', height:'42px', borderRadius:'50%', background:'#229ED9', color:'white', display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:'20px', flexShrink:0}}>✈</span>
         <div>
-          <div style={{fontWeight:'700', color:'#0c4a6e', fontSize:'15px', fontFamily:'var(--font-heading)'}}>{t('telegramTitle')}</div>
-          <div style={{color:'#075985', fontSize:'13px', lineHeight:1.5, marginTop:'2px'}}>{t('telegramSub')}</div>
+          <div style={{fontWeight:'700', color:'#0c4a6e', fontSize:'15px', fontFamily:'var(--font-heading)'}}>{title}</div>
+          <div style={{color:'#075985', fontSize:'13px', lineHeight:1.5, marginTop:'2px'}}>{sub}</div>
         </div>
       </div>
-      <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" onClick={track}
+      <a href={group.url} target="_blank" rel="noopener noreferrer" onClick={track}
         style={{background:'#229ED9', color:'white', padding:'10px 22px', borderRadius:'10px', textDecoration:'none', fontWeight:'700', fontSize:'14px', whiteSpace:'nowrap'}}>
         {t('telegramJoin')} →
       </a>

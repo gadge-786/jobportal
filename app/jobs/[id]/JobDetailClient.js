@@ -295,7 +295,7 @@ setExamTests(examData && examData.length > 0 ? examData : null)
         </div>
       </div>
 
-      <TelegramJoin jobId={job.id} />
+      <TelegramJoin jobId={job.id} state={job.state} />
 
       <JobQA jobId={job.id} />
 
