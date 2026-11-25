@@ -8,6 +8,7 @@ import SaveButton from '../components/SaveButton'
 import UpdatesBox from '../components/UpdatesBox'
 import StatesBox from '../components/StatesBox'
 import EligibilityBox from '../components/EligibilityBox'
+import LastDateTodayBox from '../components/LastDateTodayBox'
 
 export default function Home() {
   const { t, lang } = useLanguage()
@@ -120,6 +121,7 @@ export default function Home() {
           <UpdatesBox category="results" heading="Result Updates" headingMr="निकाल अपडेट्स" color="#be185d" visibleRows={4} />
           <UpdatesBox category="answer-keys" heading="Answer Key Updates" headingMr="उत्तरतालिका अपडेट्स" color="#b45309" visibleRows={4} />
           <UpdatesBox category="syllabus" heading="Syllabus Updates" headingMr="अभ्यासक्रम अपडेट्स" color="#4f46e5" scroll={false} limit={5} />
+          <LastDateTodayBox />
         </aside>
 
         <div className="dw-center">
