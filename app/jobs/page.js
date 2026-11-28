@@ -15,7 +15,7 @@ const categories = [
   { name: '💻 IT Jobs',   slug: 'it-software', color: '#059669' },
   { name: '🛡️ Defence',  slug: 'defence', color: '#dc2626' },
   { name: '📚 Teaching',  slug: 'teaching', color: '#d97706' },
-  { name: '💼 Private',   slug: 'private', color: '#6b7280' },
+  { name: '💼 Private',   slug: 'private', color: '#c2410c' },
   { name: '🏠 WFH Jobs',  slug: 'wfh', color: '#6b7280' },
   { name: '📝 Entrance Exams', slug: 'entrance-exams', color: '#9333ea' },
   { name: '🪪 Admit Cards', slug: 'admit-cards', color: '#0d9488' },
@@ -51,7 +51,7 @@ export default function AllJobs({ searchParams }) {
       query = query.eq('category', categoryFilter)
     } else {
       // default list = real openings only; results & admit cards have their own buttons
-      query = query.or('category.is.null,category.not.in.(results,admit-cards,answer-keys,syllabus)')
+      query = query.or('category.is.null,category.not.in.(results,admit-cards,answer-keys,syllabus,private)')
     }
 
     if (stateFilter === 'all-india') query = query.is('state', null)
@@ -160,7 +160,7 @@ export default function AllJobs({ searchParams }) {
                       {lang === 'mr' && job.title_mr ? job.title_mr : job.title}
                     </h3>
                     <p style={{color:'var(--color-muted)', fontSize:'14px', margin:'2px 0'}}>🏢 {job.company}</p>
-                    <p style={{color:'var(--color-muted)', fontSize:'13px', margin:'2px 0'}}>📍 {job.location} &nbsp;|&nbsp; 💰 {job.salary}</p>
+                    <p style={{color:'var(--color-muted)', fontSize:'13px', margin:'2px 0'}}>📍 {job.location}{job.category !== 'private' && <> &nbsp;|&nbsp; 💰 {job.salary}</>}</p>
                   </div>
                   <span style={{display:'flex', alignItems:'center', gap:'8px'}}>
                     <span style={{background:`${catColor}15`, color:catColor, fontSize:'12px', padding:'4px 12px', borderRadius:'20px', fontWeight:'600', whiteSpace:'nowrap'}}>
@@ -170,7 +170,7 @@ export default function AllJobs({ searchParams }) {
                   </span>
                 </div>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'16px', flexWrap:'wrap', gap:'8px'}}>
-                  {['results','admit-cards','answer-keys','syllabus'].includes(job.category) ? <span /> : <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>}
+                  {['results','admit-cards','answer-keys','syllabus','private'].includes(job.category) ? <span /> : <span style={{fontSize:'12px', color:'var(--color-danger)', fontWeight:'600'}}>⏰ {t('lastDate')}: {job.last_date}</span>}
                   <Link href={`/jobs/${job.id}`}
                     style={{background:'var(--color-ink)', color:'white', padding:'9px 20px', borderRadius:'8px', textDecoration:'none', fontSize:'13px', fontWeight:'600'}}>
                     {t('viewDetails')} →
