@@ -37,3 +37,12 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: python -u scraper/scraper.py
+
+      # Private-company jobs (Greenhouse / Lever / SmartRecruiters feeds).
+      # Runs even if the government scraper failed, but not if the run was cancelled.
+      - name: Run private jobs scraper
+        if: ${{ !cancelled() }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python -u scraper/private_jobs.py save
